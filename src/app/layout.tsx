@@ -33,6 +33,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       className={`${fredoka.variable} ${nunito.variable}`}
     >
       <head>
+        {/* eslint-disable-next-line @next/next/no-head-element */}
+        <link rel="icon" href="/favicon.ico" sizes="any" />
         {/* Preload the hero background image so it doesn't block LCP */}
         {/* eslint-disable-next-line @next/next/no-head-element */}
         <link rel="preload" as="image" href="/images/asset-0.png" />

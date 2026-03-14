@@ -42,5 +42,5 @@ next-env.d.ts
 .claude
 
 # Docs / AI attribution files
-*.md
+*.DOCX
 *.MD
