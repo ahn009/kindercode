@@ -1,98 +1,40 @@
 'use client'
 
 import Link from 'next/link'
-import {
-  BookOpen,
-  BarChart3,
-  Target,
-  Award,
-  Cpu,
-  Users,
-  TrendingUp,
-  GraduationCap,
-} from 'lucide-react'
 import { useReveal } from '@/hooks/useReveal'
 
 const schoolFeatures = [
   {
     id: 1,
-    title: 'Ready Curriculum',
-    description: 'Ready-to-use lesson plans aligned with education standards',
-    icon: BookOpen,
-    gradient: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
-    glow: 'rgba(59,130,246,0.3)',
-    bg: 'rgba(59,130,246,0.06)',
-    border: 'rgba(59,130,246,0.15)',
+    title: 'Turnkey Curriculum',
+    bg: 'from-blue-100 to-sky-50',
+    iconBg: '#dbeafe',
+    placeholder: '📚',
+    placeholderGrad: 'linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%)',
   },
   {
     id: 2,
-    title: 'Monitor Progress',
-    description: 'Real-time student analytics and progress tracking',
-    icon: BarChart3,
-    gradient: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
-    glow: 'rgba(16,185,129,0.3)',
-    bg: 'rgba(16,185,129,0.06)',
-    border: 'rgba(16,185,129,0.15)',
+    title: 'Teacher Dashboard',
+    bg: 'from-emerald-100 to-teal-50',
+    iconBg: '#d1fae5',
+    placeholder: '🦉',
+    placeholderGrad: 'linear-gradient(135deg, #6ee7b7 0%, #34d399 100%)',
   },
   {
     id: 3,
-    title: 'Engage Students',
-    description: 'Motivate students through contests and interactive challenges',
-    icon: Target,
-    gradient: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
-    glow: 'rgba(245,158,11,0.3)',
-    bg: 'rgba(245,158,11,0.06)',
-    border: 'rgba(245,158,11,0.15)',
+    title: 'Fun Competitions',
+    bg: 'from-yellow-100 to-orange-50',
+    iconBg: '#fef9c3',
+    placeholder: '🏆',
+    placeholderGrad: 'linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%)',
   },
   {
     id: 4,
-    title: 'Get Certified',
-    description: 'Digital certificates and achievement badges for students',
-    icon: Award,
-    gradient: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
-    glow: 'rgba(139,92,246,0.3)',
-    bg: 'rgba(139,92,246,0.06)',
-    border: 'rgba(139,92,246,0.15)',
-  },
-  {
-    id: 5,
-    title: 'AI Assistant',
-    description: 'Friendly AI learning assistant guides every student',
-    icon: Cpu,
-    gradient: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)',
-    glow: 'rgba(6,182,212,0.3)',
-    bg: 'rgba(6,182,212,0.06)',
-    border: 'rgba(6,182,212,0.15)',
-  },
-  {
-    id: 6,
-    title: 'Teacher Dashboard',
-    description: 'Manage multiple classes and students from one place',
-    icon: Users,
-    gradient: 'linear-gradient(135deg, #10b981 0%, #06b6d4 100%)',
-    glow: 'rgba(16,185,129,0.3)',
-    bg: 'rgba(16,185,129,0.06)',
-    border: 'rgba(16,185,129,0.15)',
-  },
-  {
-    id: 7,
-    title: 'Fun Competitions',
-    description: 'School-vs-school coding championships and team events',
-    icon: TrendingUp,
-    gradient: 'linear-gradient(135deg, #f59e0b 0%, #10b981 100%)',
-    glow: 'rgba(245,158,11,0.3)',
-    bg: 'rgba(245,158,11,0.06)',
-    border: 'rgba(245,158,11,0.15)',
-  },
-  {
-    id: 8,
     title: 'Certificates & Rewards',
-    description: 'Motivate students with verified credentials and rewards',
-    icon: GraduationCap,
-    gradient: 'linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)',
-    glow: 'rgba(139,92,246,0.3)',
-    bg: 'rgba(139,92,246,0.06)',
-    border: 'rgba(139,92,246,0.15)',
+    bg: 'from-purple-100 to-pink-50',
+    iconBg: '#ede9fe',
+    placeholder: '🎓',
+    placeholderGrad: 'linear-gradient(135deg, #c4b5fd 0%, #a78bfa 100%)',
   },
 ]
 
@@ -104,131 +46,138 @@ export default function Schools() {
       id="schools"
       ref={sectionRef}
       className="section-kinder relative overflow-hidden"
-      style={{ background: 'linear-gradient(160deg, #f8faff 0%, #eef2ff 50%, #f0fdf4 100%)' }}
+      style={{
+        background: 'linear-gradient(180deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%)',
+      }}
     >
-      {/* Subtle grid */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px)
-          `,
-          backgroundSize: '64px 64px',
-        }}
-      />
+      {/* Stars / sparkles */}
+      {[
+        { top: '8%', left: '5%', size: 8, delay: '0s' },
+        { top: '15%', left: '18%', size: 6, delay: '0.4s' },
+        { top: '6%', left: '70%', size: 10, delay: '0.8s' },
+        { top: '20%', left: '85%', size: 7, delay: '0.2s' },
+        { top: '40%', left: '3%', size: 5, delay: '1s' },
+        { top: '55%', left: '92%', size: 9, delay: '0.6s' },
+        { top: '30%', left: '50%', size: 5, delay: '1.2s' },
+      ].map((star, i) => (
+        <div
+          key={i}
+          className="absolute pointer-events-none animate-pulse"
+          style={{
+            top: star.top,
+            left: star.left,
+            animationDelay: star.delay,
+            animationDuration: '2.5s',
+          }}
+        >
+          <svg width={star.size} height={star.size} viewBox="0 0 10 10" fill="none">
+            <path d="M5 0L5.8 3.8L9 5L5.8 6.2L5 10L4.2 6.2L1 5L4.2 3.8L5 0Z" fill="rgba(255,255,255,0.8)" />
+          </svg>
+        </div>
+      ))}
 
-      {/* Gradient orbs */}
-      <div className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)' }} />
-      <div className="absolute -bottom-24 -left-24 w-[400px] h-[400px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(16,185,129,0.07) 0%, transparent 70%)' }} />
+      {/* Top cloud layer */}
+      <div className="absolute top-0 left-0 w-full pointer-events-none overflow-hidden" style={{ height: 120 }}>
+        <svg viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" className="w-full h-full">
+          <path
+            d="M0,40 C80,0 160,80 240,40 C320,0 400,70 480,40 C560,10 640,60 720,35 C800,10 880,65 960,40 C1040,15 1120,60 1200,35 C1280,10 1360,55 1440,30 L1440,0 L0,0 Z"
+            fill="white"
+            fillOpacity="0.85"
+          />
+          <path
+            d="M0,70 C100,30 200,100 300,60 C400,20 500,90 600,55 C700,20 800,80 900,50 C1000,20 1100,75 1200,50 C1300,25 1380,70 1440,50 L1440,0 L0,0 Z"
+            fill="white"
+            fillOpacity="0.5"
+          />
+        </svg>
+      </div>
 
       <div className="container-kinder relative z-10">
 
         {/* Heading */}
-        <div className="text-center mb-14 reveal">
-          <span
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold mb-4"
-            style={{ background: 'rgba(99,102,241,0.08)', color: '#6366f1', border: '1px solid rgba(99,102,241,0.15)' }}
-          >
-            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838l-2.727 1.17 1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
-            </svg>
-            Trusted by 500+ Schools
-          </span>
-          <h2 className="section-title" style={{ color: '#0f172a' }}>
-            Built for Schools &amp; Teachers
+        <div className="text-center mb-12 reveal">
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-3">
+            For Schools
           </h2>
-          <p className="text-gray-500 text-lg mt-3 max-w-xl mx-auto">
-            Everything educators need to bring world-class coding to their classrooms
+          <p className="text-lg text-slate-500 max-w-md mx-auto">
+            Empower Your Students through Coding!
           </p>
         </div>
 
-        {/* Feature grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-14 reveal">
-          {schoolFeatures.map((feature) => {
-            const Icon = feature.icon
-            return (
+        {/* Feature Cards — 4 in a row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 reveal">
+          {schoolFeatures.map((feature) => (
+            <div
+              key={feature.id}
+              className="group relative rounded-2xl p-6 flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-1"
+              style={{
+                background: 'rgba(255,255,255,0.82)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                border: '1px solid rgba(186,230,253,0.6)',
+                boxShadow: '0 4px 24px rgba(14,116,144,0.08)',
+              }}
+            >
+              {/* Hover glow */}
               <div
-                key={feature.id}
-                className="group relative rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1.5"
+                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                style={{ boxShadow: '0 12px 40px rgba(14,116,144,0.15)' }}
+              />
+
+              {/* Illustration placeholder */}
+              <div
+                className="relative z-10 w-full aspect-square max-w-[160px] rounded-xl mb-4 flex items-center justify-center text-6xl"
                 style={{
-                  background: feature.bg,
-                  border: `1px solid ${feature.border}`,
-                  boxShadow: '0 2px 16px rgba(0,0,0,0.04)',
+                  background: feature.placeholderGrad,
+                  opacity: 0.85,
                 }}
               >
-                {/* Hover glow */}
-                <div
-                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"
-                  style={{ boxShadow: `0 12px 40px ${feature.glow}` }}
-                />
-
-                {/* Icon */}
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                  style={{ background: feature.gradient, boxShadow: `0 6px 20px ${feature.glow}` }}
-                >
-                  <Icon className="w-6 h-6 text-white" strokeWidth={2} />
-                </div>
-
-                <h3 className="font-extrabold text-gray-900 text-base mb-1.5 leading-tight">{feature.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{feature.description}</p>
+                {feature.placeholder}
               </div>
-            )
-          })}
-        </div>
 
-        {/* Stats bar */}
-        <div
-          className="rounded-3xl p-6 md:p-8 mb-10 reveal"
-          style={{
-            background: 'rgba(255,255,255,0.8)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(99,102,241,0.1)',
-            boxShadow: '0 4px 32px rgba(0,0,0,0.06)',
-          }}
-        >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            {[
-              { value: '500+', label: 'Partner Schools', icon: '🏫' },
-              { value: '12K+', label: 'Active Students', icon: '👩‍💻' },
-              { value: '98%', label: 'Teacher Satisfaction', icon: '⭐' },
-              { value: '40+', label: 'Countries', icon: '🌍' },
-            ].map((stat, i) => (
-              <div key={i}>
-                <div className="text-2xl mb-1">{stat.icon}</div>
-                <div className="text-2xl font-extrabold text-gray-900 leading-tight">{stat.value}</div>
-                <div className="text-xs text-gray-500 font-semibold mt-0.5">{stat.label}</div>
-              </div>
-            ))}
-          </div>
+              <h3 className="relative z-10 text-base font-semibold text-slate-700 leading-snug">
+                {feature.title}
+              </h3>
+            </div>
+          ))}
         </div>
 
         {/* CTA */}
         <div className="text-center reveal">
           <Link
             href="#"
-            className="group relative inline-flex items-center gap-3 px-12 py-4 rounded-2xl font-extrabold text-lg text-white overflow-hidden transition-all duration-300 hover:-translate-y-1 active:scale-95"
+            className="group inline-flex items-center gap-2 px-8 py-3 rounded-full font-bold text-base text-white transition-all duration-300 hover:scale-105 active:scale-95"
             style={{
-              background: 'linear-gradient(135deg, #6366f1 0%, #10b981 100%)',
-              boxShadow: '0 8px 32px rgba(99,102,241,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              boxShadow: '0 4px 20px rgba(16,185,129,0.35)',
             }}
           >
-            <span
-              className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none"
-              style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)' }}
-            />
-            <svg className="w-6 h-6 relative z-10" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
-            </svg>
-            <span className="relative z-10">Get Your School Started</span>
-            <svg className="w-5 h-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            Get Your School Started
+            <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
           </Link>
-          <p className="text-gray-400 text-sm mt-4 font-medium">Free 30-day trial · No credit card required</p>
+
+          <p className="text-sm text-slate-400 mt-4 font-medium">
+            Join Over 1,000+ Schools Making Coding Fun
+          </p>
         </div>
+      </div>
+
+      {/* Bottom cloud layer */}
+      <div className="absolute bottom-0 left-0 w-full pointer-events-none overflow-hidden" style={{ height: 100 }}>
+        <svg viewBox="0 0 1440 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" className="w-full h-full">
+          <path
+            d="M0,60 C120,20 240,90 360,55 C480,20 600,80 720,50 C840,20 960,75 1080,50 C1200,25 1320,70 1440,45 L1440,100 L0,100 Z"
+            fill="white"
+            fillOpacity="0.9"
+          />
+          <path
+            d="M0,80 C100,50 200,100 300,70 C400,40 500,95 600,65 C700,35 800,85 900,60 C1000,35 1100,80 1200,60 C1300,40 1380,75 1440,58 L1440,100 L0,100 Z"
+            fill="white"
+            fillOpacity="0.55"
+          />
+        </svg>
       </div>
     </section>
   )
