@@ -8,7 +8,7 @@ import { SUPPORTED_LANGUAGES } from '@/lib/languages'
 
 const navLinks = [
   { href: '/', label: 'Home', active: true },
-  { href: '#how-it-works', label: 'How It Works' },
+  { href: '/#how-it-works', label: 'How It Works' },
   { href: '/#learning', label: 'Learning Methods' },
   { href: '/#skills', label: 'Skill Paths' },
   { href: '/#competitions', label: 'Competitions' },
