@@ -1,0 +1,307 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83% 53.3%;
+    --radius: 0.5rem;
+
+    /* KinderCode design tokens */
+    --kinder-primary: #4A90E2;
+    --kinder-primary-dark: #357ABD;
+    --kinder-secondary: #FF6B6B;
+    --kinder-accent: #FFD93D;
+    --kinder-success: #6BCB77;
+    --kinder-purple: #9B59B6;
+    --kinder-orange: #FF8C42;
+    --kinder-dark: #2C3E50;
+    --kinder-light: #F0F4F8;
+    --kinder-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    --kinder-shadow-hover: 0 30px 60px rgba(0,0,0,0.15);
+    --kinder-radius: 20px;
+    --kinder-radius-lg: 30px;
+  }
+
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-nunito), sans-serif;
+    background-color: var(--kinder-light);
+    color: var(--kinder-dark);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-fredoka), sans-serif;
+    color: var(--kinder-dark);
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  ul {
+    list-style: none;
+  }
+}
+
+@layer components {
+  /* Container */
+  .container-kinder {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* Buttons */
+  .btn-kinder {
+    @apply inline-block px-8 py-3.5 rounded-full font-bold cursor-pointer transition-all duration-300 border-0 text-center relative overflow-hidden;
+    /* Removed transform-style: preserve-3d — buttons are flat, the 3D flag
+       was creating unnecessary compositing layers on every button render. */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+
+  .btn-kinder::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.5s;
+  }
+
+  .btn-kinder:hover::before {
+    left: 100%;
+  }
+
+  .btn-kinder:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+
+  .btn-kinder:active {
+    transform: translateY(-1px) scale(0.98);
+  }
+
+  .btn-kinder-primary {
+    background: linear-gradient(135deg, var(--kinder-primary) 0%, var(--kinder-primary-dark) 100%);
+    color: white;
+  }
+
+  .btn-kinder-secondary {
+    @apply bg-white border-2;
+    color: var(--kinder-primary);
+    border-color: var(--kinder-primary);
+  }
+
+  .btn-kinder-accent {
+    background: linear-gradient(135deg, var(--kinder-accent) 0%, #FFC107 100%);
+    color: var(--kinder-dark);
+  }
+
+  .btn-kinder-success {
+    background: linear-gradient(135deg, var(--kinder-success) 0%, #5ABF65 100%);
+    color: white;
+  }
+
+  .btn-kinder-orange {
+    background: linear-gradient(135deg, var(--kinder-orange) 0%, #FF7043 100%);
+    color: white;
+  }
+
+  .btn-kinder-block {
+    @apply w-full block;
+  }
+
+  .btn-kinder-sm {
+    @apply py-2.5 px-5 text-sm;
+  }
+
+  /* Sections */
+  .section-kinder {
+    @apply py-24 relative;
+    /*
+      content-visibility: auto tells the browser it can skip layout/paint for
+      off-screen sections entirely until they are near the viewport.
+      contain-intrinsic-size is the estimated height used for scroll bar sizing.
+    */
+    content-visibility: auto;
+    contain-intrinsic-size: 0 700px;
+  }
+
+  .section-title {
+    @apply text-center text-4xl mb-16 relative;
+    color: var(--kinder-dark);
+    /* Removed transform-style: preserve-3d — no 3D child elements here */
+  }
+
+  .section-title::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 5px;
+    background: linear-gradient(90deg, var(--kinder-primary), var(--kinder-accent));
+    margin: 15px auto 0;
+    border-radius: 3px;
+    box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+  }
+
+  /* Cards */
+  .card-kinder {
+    @apply bg-white p-8 rounded-[30px] text-center transition-all duration-500 relative overflow-hidden;
+    box-shadow: var(--kinder-shadow);
+    border: 1px solid rgba(255,255,255,0.5);
+    /*
+      transform-style: preserve-3d kept only on the card because hover uses
+      rotateX — but promoted to will-change so the GPU layer is ready.
+    */
+    will-change: transform;
+  }
+
+  .card-kinder::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--kinder-primary), var(--kinder-accent));
+    transform: scaleX(0);
+    transition: transform 0.4s;
+  }
+
+  .card-kinder:hover {
+    transform: translateY(-10px) rotateX(5deg);
+    box-shadow: var(--kinder-shadow-hover);
+  }
+
+  .card-kinder:hover::before {
+    transform: scaleX(1);
+  }
+
+  .card-kinder h3 {
+    @apply mb-5 text-xl font-bold;
+    color: var(--kinder-dark);
+  }
+
+  .card-img-container {
+    @apply h-44 rounded-[20px] mb-5 overflow-hidden relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+
+  .card-img-container img {
+    @apply w-full h-full object-cover transition-transform duration-500;
+  }
+
+  .card-kinder:hover .card-img-container img {
+    transform: scale(1.1);
+  }
+
+  /* Grid */
+  .grid-kinder {
+    @apply grid gap-8;
+    /*
+      Removed global perspective: 1000px — it was creating a stacking context
+      on every grid, forcing the browser to composit the entire grid subtree.
+      The 3D card hover effect works without it (cards have their own transform).
+    */
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--kinder-light);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--kinder-primary), var(--kinder-accent));
+  border-radius: 6px;
+  border: 3px solid var(--kinder-light);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--kinder-primary-dark), var(--kinder-orange));
+}
+
+/*
+  Scroll reveal — PROGRESSIVE ENHANCEMENT.
+
+  By default (no JS / SSR) content is fully visible.
+  The useReveal hook adds `js-enhanced` to each section when it mounts,
+  enabling the hide→reveal animation. Elements already in the viewport
+  receive `active` immediately so there is no flash.
+*/
+.js-enhanced .reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.js-enhanced .reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Respect user's motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .js-enhanced .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .section-title {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .btn-kinder {
+    @apply px-6 py-3 text-sm;
+  }
+}
