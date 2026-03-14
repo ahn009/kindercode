@@ -9,7 +9,8 @@
     "pricing": "Preços",
     "community": "Comunidade",
     "login": "Entrar",
-    "signup": "Cadastrar"
+    "signup": "Cadastrar",
+    "getStarted": "Começar"
   },
   "auth": {
     "createAccount": "Criar Conta",

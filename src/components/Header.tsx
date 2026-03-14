@@ -1,24 +1,25 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { Link, useRouter, usePathname } from '@/i18n/navigation'
 import { Menu, X, Rocket, Globe, ChevronDown } from 'lucide-react'
 import { SUPPORTED_LANGUAGES } from '@/lib/languages'
 
-const navLinks = [
-  { href: '/', label: 'Home', active: true },
-  { href: '/#how-it-works', label: 'How It Works' },
-  { href: '/#learning', label: 'Learning Methods' },
-  { href: '/#skills', label: 'Skill Paths' },
-  { href: '/#competitions', label: 'Competitions' },
-  { href: '/#schools', label: 'For Schools' },
-  { href: '/#pricing', label: 'Pricing' },
-  { href: '/#community', label: 'Community' },
-]
-
 export default function Header() {
   const locale = useLocale()
+  const t = useTranslations('nav')
+
+  const navLinks = [
+    // Removed home anchor tag
+    { href: '/#how-it-works', label: t('howItWorks') },
+    { href: '/#learning', label: t('learningMethods') },
+    { href: '/#skills', label: t('skillPaths') },
+    { href: '/#competitions', label: t('competitions') },
+    { href: '/#schools', label: t('forSchools') },
+    { href: '/#pricing', label: t('pricing') },
+    { href: '/#community', label: t('community') },
+  ]
   const router = useRouter()
   const pathname = usePathname()
 
@@ -68,11 +69,7 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href as '/'}
-                className={`relative font-bold text-sm transition-all duration-300 py-1 group ${
-                  link.active
-                    ? 'text-[#FFD93D]'
-                    : 'text-white/90 hover:text-[#FFD93D]'
-                }`}
+                className="relative font-bold text-sm transition-all duration-300 py-1 text-white/90 hover:text-[#FFD93D] group"
               >
                 {link.label}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#FFD93D] to-[#FF6B6B] rounded-full transition-all duration-300 group-hover:w-full" />
@@ -132,7 +129,15 @@ export default function Header() {
               href="/login"
               className="btn-kinder btn-kinder-secondary btn-kinder-sm bg-transparent text-white border-white/50 hover:bg-white/20"
             >
-              Login
+              {t('login')}
+            </Link>
+
+            <Link
+              href="/signup"
+              className="btn-kinder btn-kinder-sm text-white transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              style={{ background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)' }}
+            >
+              {t('getStarted')} 🚀
             </Link>
           </div>
 
@@ -158,11 +163,7 @@ export default function Header() {
                 <Link
                   key={link.href}
                   href={link.href as '/'}
-                  className={`font-bold text-sm transition-all duration-300 py-2 ${
-                    link.active
-                      ? 'text-[#FFD93D]'
-                      : 'text-white/90 hover:text-[#FFD93D]'
-                  }`}
+                  className="font-bold text-sm transition-all duration-300 py-2 text-white/90 hover:text-[#FFD93D]"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.label}
@@ -196,8 +197,17 @@ export default function Header() {
                 <Link
                   href="/login"
                   className="btn-kinder btn-kinder-secondary bg-transparent text-white border-white/50 text-center"
+                  onClick={() => setMobileMenuOpen(false)}
                 >
-                  Login
+                  {t('login')}
+                </Link>
+                <Link
+                  href="/signup"
+                  className="btn-kinder text-white text-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all"
+                  style={{ background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)' }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {t('getStarted')} 🚀
                 </Link>
               </div>
             </div>

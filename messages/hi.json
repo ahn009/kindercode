@@ -9,7 +9,8 @@
     "pricing": "मूल्य निर्धारण",
     "community": "समुदाय",
     "login": "लॉगिन",
-    "signup": "साइन अप"
+    "signup": "साइन अप",
+    "getStarted": "शुरू करें"
   },
   "auth": {
     "createAccount": "खाता बनाएं",
