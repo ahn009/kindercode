@@ -114,7 +114,7 @@ function TestimonialCard({ testimonial, state, onClick, index }: CardProps) {
         style={{
           fontSize: isActive ? '120px' : '80px',
           lineHeight: 1,
-          background: testimonial.gradient,
+          backgroundImage: testimonial.gradient,
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
@@ -189,7 +189,7 @@ function TestimonialCard({ testimonial, state, onClick, index }: CardProps) {
               className="font-bold text-white"
               style={{
                 fontSize: isActive ? '1rem' : '0.875rem',
-                background: isActive ? testimonial.gradient : undefined,
+                backgroundImage: isActive ? testimonial.gradient : undefined,
                 WebkitBackgroundClip: isActive ? 'text' : undefined,
                 WebkitTextFillColor: isActive ? 'transparent' : undefined,
                 backgroundClip: isActive ? 'text' : undefined,
