@@ -1,6 +1,7 @@
 'use client'
 
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n/navigation'
 
 const STARS = [
   { top: '10%', left: '4%',  size: 18, opacity: 0.9, delay: '0s' },
@@ -25,6 +26,8 @@ function Sparkle({ size, opacity, delay }: { size: number; opacity: number; dela
 }
 
 export default function Hero() {
+  const t = useTranslations('hero')
+
   return (
     <section
       className="relative overflow-hidden"
@@ -82,7 +85,7 @@ export default function Hero() {
             }}
           >
             <span className="w-2 h-2 rounded-full bg-[#FFD93D]" style={{ animation: 'hero-dot-pulse 2s ease-in-out infinite' }} />
-            AI-Powered Coding Platform for Kids
+            {t('badge')}
           </div>
 
           {/* Headline */}
@@ -90,21 +93,21 @@ export default function Hero() {
             className="font-fredoka font-bold leading-[1.1] mb-5"
             style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.75rem)', color: '#fff', textShadow: '0 2px 20px rgba(0,0,0,0.3)' }}
           >
-            Where Kids Become{' '}
+            {t('headline')}{' '}
             <span style={{
               background: 'linear-gradient(135deg, #FFD93D 0%, #FF8C42 50%, #FF6B6B 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
             }}>
-              Future Coders!
+              {t('headlineHighlight')}
             </span>
           </h1>
 
           {/* Subtitle */}
           <p className="font-semibold leading-relaxed mb-8" style={{ fontSize: 'clamp(1rem, 1.5vw, 1.15rem)', color: 'rgba(255,255,255,0.82)' }}>
-            Learn to code through games, stories &amp; AI.{' '}
-            <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 400, fontSize: '0.9em' }}>Designed for ages 6–16.</span>
+            {t('subtitle')}{' '}
+            <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 400, fontSize: '0.9em' }}>{t('subtitleAge')}</span>
           </p>
 
           {/* CTA Buttons */}
@@ -125,7 +128,7 @@ export default function Hero() {
               <svg className="w-5 h-5 relative z-10" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
               </svg>
-              <span className="relative z-10">Get Started Free</span>
+              <span className="relative z-10">{t('getStartedFree')}</span>
             </Link>
 
             {/* Secondary — glassmorphism */}
@@ -142,16 +145,16 @@ export default function Hero() {
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
               </svg>
-              Watch Demo
+              {t('watchDemo')}
             </Link>
           </div>
 
           {/* Social proof row */}
           <div className="flex flex-wrap items-center gap-6">
             {[
-              { value: '10K+', label: 'Learners' },
-              { value: '500+', label: 'Schools' },
-              { value: '4.9★', label: 'Rating' },
+              { value: '10K+', label: t('learnersLabel') },
+              { value: '500+', label: t('schoolsLabel') },
+              { value: '4.9★', label: t('ratingLabel') },
             ].map((stat, i) => (
               <div key={i}>
                 <div className="text-xl font-extrabold text-white leading-tight">{stat.value}</div>
@@ -170,7 +173,7 @@ export default function Hero() {
                   +
                 </div>
               </div>
-              <span className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.5)' }}>Join them today</span>
+              <span className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('joinToday')}</span>
             </div>
           </div>
         </div>

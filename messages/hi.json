@@ -10,7 +10,11 @@
     "community": "समुदाय",
     "login": "लॉगिन",
     "signup": "साइन अप",
-    "getStarted": "शुरू करें"
+    "getStarted": "शुरू करें",
+    "dashboard": "डैशबोर्ड",
+    "profile": "प्रोफ़ाइल",
+    "settings": "सेटिंग्स",
+    "logout": "लॉग आउट"
   },
   "auth": {
     "createAccount": "खाता बनाएं",
@@ -123,5 +127,60 @@
     "ca": "कनाडा",
     "au": "ऑस्ट्रेलिया",
     "other": "अन्य"
+  },
+  "hero": {
+    "badge": "बच्चों के लिए AI-संचालित कोडिंग प्लेटफ़ॉर्म",
+    "headline": "जहाँ बच्चे बनते हैं",
+    "headlineHighlight": "भविष्य के प्रोग्रामर!",
+    "subtitle": "खेलों, कहानियों और AI के माध्यम से कोडिंग सीखें।",
+    "subtitleAge": "6–16 वर्ष के लिए डिज़ाइन किया गया।",
+    "getStartedFree": "मुफ़्त शुरू करें",
+    "watchDemo": "डेमो देखें",
+    "learnersLabel": "छात्र",
+    "schoolsLabel": "स्कूल",
+    "ratingLabel": "रेटिंग",
+    "joinToday": "आज जुड़ें"
+  },
+  "dashboard": {
+    "welcome": "वापसी पर स्वागत है",
+    "progress": "आपकी प्रगति",
+    "dailyChallenge": "दैनिक चुनौती",
+    "achievements": "उपलब्धियाँ",
+    "recommended": "आपके लिए अनुशंसित",
+    "continueLearning": "सीखना जारी रखें",
+    "streak": "दिन की लकीर",
+    "points": "अंक",
+    "level": "स्तर",
+    "startCoding": "कोडिंग शुरू करें",
+    "viewAll": "सभी देखें",
+    "mathGames": "गणित के खेल",
+    "languageLearning": "भाषा सीखना",
+    "logicPuzzles": "तर्क पहेलियाँ",
+    "creativeArts": "रचनात्मक कला"
+  },
+  "contact": {
+    "title": "हमसे संपर्क करें",
+    "subtitle": "हम आपसे सुनना पसंद करेंगे",
+    "name": "आपका नाम",
+    "namePlaceholder": "अपना नाम दर्ज करें",
+    "emailField": "ईमेल पता",
+    "emailPlaceholder": "अपना ईमेल दर्ज करें",
+    "subject": "विषय",
+    "subjectPlaceholder": "यह किसके बारे में है?",
+    "message": "संदेश",
+    "messagePlaceholder": "बताएं हम कैसे मदद कर सकते हैं...",
+    "send": "संदेश भेजें",
+    "sending": "भेज रहे हैं...",
+    "success": "संदेश सफलतापूर्वक भेजा गया! हम जल्द ही आपसे संपर्क करेंगे।",
+    "faqTitle": "अक्सर पूछे जाने वाले प्रश्न",
+    "responseTime": "प्रतिक्रिया समय: 24 घंटे के भीतर"
+  },
+  "privacy": {
+    "title": "गोपनीयता नीति",
+    "lastUpdated": "अंतिम अपडेट"
+  },
+  "terms": {
+    "title": "सेवा की शर्तें",
+    "lastUpdated": "अंतिम अपडेट"
   }
 }

@@ -10,7 +10,11 @@
     "community": "Comunità",
     "login": "Accedi",
     "signup": "Registrati",
-    "getStarted": "Inizia"
+    "getStarted": "Inizia",
+    "dashboard": "Pannello",
+    "profile": "Profilo",
+    "settings": "Impostazioni",
+    "logout": "Esci"
   },
   "auth": {
     "createAccount": "Crea Account",
@@ -123,5 +127,60 @@
     "ca": "Canada",
     "au": "Australia",
     "other": "Altro"
+  },
+  "hero": {
+    "badge": "Piattaforma di Programmazione con IA per Bambini",
+    "headline": "Dove i Bambini Diventano",
+    "headlineHighlight": "Programmatori del Futuro!",
+    "subtitle": "Impara a programmare attraverso giochi, storie e IA.",
+    "subtitleAge": "Progettato per le età 6–16.",
+    "getStartedFree": "Inizia Gratuitamente",
+    "watchDemo": "Guarda Demo",
+    "learnersLabel": "Studenti",
+    "schoolsLabel": "Scuole",
+    "ratingLabel": "Valutazione",
+    "joinToday": "Unisciti oggi"
+  },
+  "dashboard": {
+    "welcome": "Bentornato",
+    "progress": "Il Tuo Progresso",
+    "dailyChallenge": "Sfida Giornaliera",
+    "achievements": "Traguardi",
+    "recommended": "Consigliato per Te",
+    "continueLearning": "Continua a Imparare",
+    "streak": "Giorni Consecutivi",
+    "points": "Punti",
+    "level": "Livello",
+    "startCoding": "Inizia a Programmare",
+    "viewAll": "Vedi Tutto",
+    "mathGames": "Giochi di Matematica",
+    "languageLearning": "Apprendimento delle Lingue",
+    "logicPuzzles": "Rompicapi Logici",
+    "creativeArts": "Arti Creative"
+  },
+  "contact": {
+    "title": "Contattaci",
+    "subtitle": "Ci piacerebbe sentirti",
+    "name": "Il Tuo Nome",
+    "namePlaceholder": "Inserisci il tuo nome",
+    "emailField": "Indirizzo E-mail",
+    "emailPlaceholder": "Inserisci la tua e-mail",
+    "subject": "Oggetto",
+    "subjectPlaceholder": "Di cosa si tratta?",
+    "message": "Messaggio",
+    "messagePlaceholder": "Dicci come possiamo aiutarti...",
+    "send": "Invia Messaggio",
+    "sending": "Invio in corso...",
+    "success": "Messaggio inviato con successo! Ti risponderemo presto.",
+    "faqTitle": "Domande Frequenti",
+    "responseTime": "Tempo di risposta: entro 24 ore"
+  },
+  "privacy": {
+    "title": "Informativa sulla Privacy",
+    "lastUpdated": "Ultimo Aggiornamento"
+  },
+  "terms": {
+    "title": "Termini di Servizio",
+    "lastUpdated": "Ultimo Aggiornamento"
   }
 }

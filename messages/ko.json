@@ -10,7 +10,11 @@
     "community": "커뮤니티",
     "login": "로그인",
     "signup": "회원가입",
-    "getStarted": "시작하기"
+    "getStarted": "시작하기",
+    "dashboard": "대시보드",
+    "profile": "프로필",
+    "settings": "설정",
+    "logout": "로그아웃"
   },
   "auth": {
     "createAccount": "계정 만들기",
@@ -123,5 +127,60 @@
     "ca": "캐나다",
     "au": "호주",
     "other": "기타"
+  },
+  "hero": {
+    "badge": "아이들을 위한 AI 코딩 플랫폼",
+    "headline": "아이들이 되는 곳",
+    "headlineHighlight": "미래의 코더!",
+    "subtitle": "게임, 이야기, AI를 통해 코딩을 배우세요.",
+    "subtitleAge": "6–16세를 위해 설계되었습니다.",
+    "getStartedFree": "무료로 시작하기",
+    "watchDemo": "데모 보기",
+    "learnersLabel": "학습자",
+    "schoolsLabel": "학교",
+    "ratingLabel": "평점",
+    "joinToday": "오늘 참여하세요"
+  },
+  "dashboard": {
+    "welcome": "다시 오신 것을 환영합니다",
+    "progress": "진행 상황",
+    "dailyChallenge": "일일 도전",
+    "achievements": "업적",
+    "recommended": "추천 활동",
+    "continueLearning": "계속 배우기",
+    "streak": "연속 일수",
+    "points": "포인트",
+    "level": "레벨",
+    "startCoding": "코딩 시작",
+    "viewAll": "전체 보기",
+    "mathGames": "수학 게임",
+    "languageLearning": "언어 학습",
+    "logicPuzzles": "논리 퍼즐",
+    "creativeArts": "창의 예술"
+  },
+  "contact": {
+    "title": "문의하기",
+    "subtitle": "여러분의 의견을 듣고 싶습니다",
+    "name": "이름",
+    "namePlaceholder": "이름을 입력하세요",
+    "emailField": "이메일 주소",
+    "emailPlaceholder": "이메일을 입력하세요",
+    "subject": "제목",
+    "subjectPlaceholder": "무엇에 관한 것인가요?",
+    "message": "메시지",
+    "messagePlaceholder": "어떻게 도와드릴까요...",
+    "send": "메시지 보내기",
+    "sending": "전송 중...",
+    "success": "메시지가 성공적으로 전송되었습니다! 곧 연락드리겠습니다.",
+    "faqTitle": "자주 묻는 질문",
+    "responseTime": "응답 시간: 24시간 이내"
+  },
+  "privacy": {
+    "title": "개인정보 처리방침",
+    "lastUpdated": "최종 업데이트"
+  },
+  "terms": {
+    "title": "서비스 약관",
+    "lastUpdated": "최종 업데이트"
   }
 }

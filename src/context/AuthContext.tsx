@@ -19,13 +19,22 @@ import {
   browserLocalPersistence,
   browserSessionPersistence,
   setPersistence,
+  updateProfile,
 } from 'firebase/auth'
-import { auth } from '@/lib/firebase'
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { auth, db } from '@/lib/firebase'
+
+interface SignupProfile {
+  name: string
+  gradeLevel: string
+  country: string
+  language: string
+}
 
 interface AuthContextType {
   user: User | null
   loading: boolean
-  signup: (email: string, password: string) => Promise<void>
+  signup: (email: string, password: string, profile: SignupProfile) => Promise<void>
   login: (email: string, password: string, rememberMe?: boolean) => Promise<void>
   googleLogin: () => Promise<void>
   logout: () => Promise<void>
@@ -46,8 +55,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsubscribe
   }, [])
 
-  async function signup(email: string, password: string) {
-    await createUserWithEmailAndPassword(auth, email, password)
+  async function signup(email: string, password: string, profile: SignupProfile) {
+    const credential = await createUserWithEmailAndPassword(auth, email, password)
+    const { user: newUser } = credential
+
+    // Set display name on the Firebase Auth profile
+    await updateProfile(newUser, { displayName: profile.name })
+
+    // Persist full profile to Firestore
+    await setDoc(doc(db, 'users', newUser.uid), {
+      uid: newUser.uid,
+      email,
+      name: profile.name,
+      gradeLevel: profile.gradeLevel,
+      country: profile.country,
+      preferredLanguage: profile.language,
+      role: null,           // set during select-role
+      avatar: null,         // set during onboarding
+      learningStyle: null,  // set during onboarding
+      goals: [],            // set during onboarding
+      schoolType: null,     // set during onboarding
+      onboardingComplete: false,
+      streak: 0,
+      points: 0,
+      level: 1,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    })
   }
 
   async function login(email: string, password: string, rememberMe = true) {
@@ -60,7 +94,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function googleLogin() {
     const provider = new GoogleAuthProvider()
-    await signInWithPopup(auth, provider)
+    const credential = await signInWithPopup(auth, provider)
+    const { user: googleUser } = credential
+
+    // Create Firestore document on first Google login (setDoc with merge is idempotent)
+    await setDoc(
+      doc(db, 'users', googleUser.uid),
+      {
+        uid: googleUser.uid,
+        email: googleUser.email,
+        name: googleUser.displayName ?? googleUser.email?.split('@')[0] ?? 'Coder',
+        gradeLevel: null,
+        country: null,
+        preferredLanguage: 'en',
+        role: null,
+        avatar: null,
+        learningStyle: null,
+        goals: [],
+        schoolType: null,
+        onboardingComplete: false,
+        streak: 0,
+        points: 0,
+        level: 1,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }, // won't overwrite if document already exists
+    )
   }
 
   async function logout() {
@@ -72,9 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider
-      value={{ user, loading, signup, login, googleLogin, logout, resetPassword }}
-    >
+    <AuthContext.Provider value={{ user, loading, signup, login, googleLogin, logout, resetPassword }}>
       {children}
     </AuthContext.Provider>
   )

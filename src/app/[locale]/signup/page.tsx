@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { useRouter } from '@/i18n/navigation'
@@ -55,15 +55,6 @@ export default function SignupPage() {
     terms: false,
   })
 
-  // Detect Gmail and auto-set language to English
-  const isGmail = formData.email.toLowerCase().endsWith('@gmail.com')
-
-  useEffect(() => {
-    if (isGmail) {
-      setFormData((prev) => ({ ...prev, language: 'en' }))
-    }
-  }, [isGmail])
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
@@ -87,7 +78,12 @@ export default function SignupPage() {
     setError('')
     setLoading(true)
     try {
-      await signup(formData.email, formData.password)
+      await signup(formData.email, formData.password, {
+        name: formData.name,
+        gradeLevel: formData.gradeLevel,
+        country: formData.country,
+        language: formData.language,
+      })
       router.push('/select-role')
     } catch (err: unknown) {
       setError(getFirebaseError(err))
@@ -308,29 +304,21 @@ export default function SignupPage() {
                   {t('preferredLanguage')}{' '}
                   <span className="text-pink-500">*</span>
                 </label>
-                <div className="relative">
-                  <select
-                    id="language"
-                    name="language"
-                    value={formData.language}
-                    onChange={handleChange}
-                    disabled={isGmail}
-                    required
-                    className="w-full px-4 py-3 border-2 border-indigo-100 rounded-2xl text-gray-800 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all bg-white disabled:opacity-60 disabled:cursor-not-allowed"
-                  >
-                    <option value="">{t('languagePlaceholder')}</option>
-                    {SUPPORTED_LANGUAGES.map((lang) => (
-                      <option key={lang.code} value={lang.code}>
-                        {lang.flag} {lang.name}
-                      </option>
-                    ))}
-                  </select>
-                  {isGmail && (
-                    <p className="mt-1 text-xs text-indigo-500 font-semibold">
-                      {t('languageAutoSet')}
-                    </p>
-                  )}
-                </div>
+                <select
+                  id="language"
+                  name="language"
+                  value={formData.language}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 border-2 border-indigo-100 rounded-2xl text-gray-800 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all bg-white"
+                >
+                  <option value="">{t('languagePlaceholder')}</option>
+                  {SUPPORTED_LANGUAGES.map((lang) => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.flag} {lang.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Terms */}
@@ -350,14 +338,16 @@ export default function SignupPage() {
                 >
                   I accept the{' '}
                   <Link
-                    href="#"
+                    href="/terms"
+                    target="_blank"
                     className="text-indigo-600 font-semibold hover:underline"
                   >
                     Terms of Service
                   </Link>{' '}
                   and{' '}
                   <Link
-                    href="#"
+                    href="/privacy-policy"
+                    target="_blank"
                     className="text-indigo-600 font-semibold hover:underline"
                   >
                     Privacy Policy

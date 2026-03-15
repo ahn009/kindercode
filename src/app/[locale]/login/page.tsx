@@ -24,7 +24,7 @@ export default function LoginPage() {
     setLoading(true)
     try {
       await login(email, password, rememberMe)
-      router.push('/')
+      router.push('/home')
     } catch (err: unknown) {
       setError(getFirebaseError(err))
     } finally {
@@ -37,7 +37,7 @@ export default function LoginPage() {
     setLoading(true)
     try {
       await googleLogin()
-      router.push('/')
+      router.push('/home')
     } catch (err: unknown) {
       setError(getFirebaseError(err))
     } finally {

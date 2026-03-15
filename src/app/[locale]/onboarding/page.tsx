@@ -5,6 +5,9 @@ import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from '@/i18n/navigation'
 import { CheckCircle } from 'lucide-react'
+import { doc, updateDoc, serverTimestamp } from 'firebase/firestore'
+import { db } from '@/lib/firebase'
+import { useAuth } from '@/context/AuthContext'
 
 const AVATARS = ['🦊', '🐼', '🦁', '🐸', '🤖', '🦋', '🐙', '🦄']
 
@@ -20,12 +23,15 @@ function OnboardingContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const role = searchParams.get('role') ?? 'student'
+  const { user } = useAuth()
 
   const [step, setStep] = useState(1)
   const [avatar, setAvatar] = useState('')
   const [learningStyle, setLearningStyle] = useState('')
   const [goals, setGoals] = useState<string[]>([])
   const [schoolType, setSchoolType] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
   const totalSteps = 5
 
@@ -35,8 +41,30 @@ function OnboardingContent() {
     )
   }
 
-  function handleFinish() {
-    router.push('/')
+  async function handleFinish() {
+    setSaving(true)
+    setSaveError('')
+    try {
+      if (user) {
+        // Persist all onboarding preferences to Firestore
+        await updateDoc(doc(db, 'users', user.uid), {
+          role,
+          avatar: avatar || '🤖',
+          learningStyle: learningStyle || null,
+          goals,
+          schoolType: schoolType || null,
+          onboardingComplete: true,
+          updatedAt: serverTimestamp(),
+        })
+      }
+      router.push('/home')
+    } catch {
+      setSaveError('Failed to save preferences. Redirecting anyway…')
+      // Still redirect even if save fails — data can be re-collected later
+      setTimeout(() => router.push('/home'), 1500)
+    } finally {
+      setSaving(false)
+    }
   }
 
   const stepTitles = [
@@ -103,6 +131,13 @@ function OnboardingContent() {
           </h1>
           <p className="text-gray-500">{stepSubtitles[step - 1]}</p>
         </div>
+
+        {/* Save error */}
+        {saveError && (
+          <div className="mb-4 px-4 py-3 bg-yellow-50 border border-yellow-200 rounded-2xl text-yellow-700 text-sm font-semibold text-center">
+            {saveError}
+          </div>
+        )}
 
         {/* Step content */}
         <div className="min-h-[200px]">
@@ -262,7 +297,8 @@ function OnboardingContent() {
           {step > 1 && (
             <button
               onClick={() => setStep((s) => s - 1)}
-              className="flex-1 py-3 border-2 border-indigo-200 rounded-2xl text-indigo-600 font-semibold hover:bg-indigo-50 transition-all"
+              disabled={saving}
+              className="flex-1 py-3 border-2 border-indigo-200 rounded-2xl text-indigo-600 font-semibold hover:bg-indigo-50 transition-all disabled:opacity-50"
             >
               {t('back')}
             </button>
@@ -289,10 +325,11 @@ function OnboardingContent() {
           ) : (
             <button
               onClick={handleFinish}
-              className="flex-1 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl font-bold hover:shadow-xl hover:-translate-y-0.5 transition-all"
+              disabled={saving}
+              className="flex-1 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl font-bold hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               style={{ boxShadow: '0 4px 15px rgba(34,197,94,0.4)' }}
             >
-              {t('finish')}
+              {saving ? 'Saving…' : t('finish')}
             </button>
           )}
         </div>
@@ -303,7 +340,11 @@ function OnboardingContent() {
 
 export default function OnboardingPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center"><div className="text-white text-xl">Loading…</div></div>}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center">
+        <div className="w-12 h-12 rounded-full border-4 border-white border-t-transparent animate-spin" />
+      </div>
+    }>
       <OnboardingContent />
     </Suspense>
   )

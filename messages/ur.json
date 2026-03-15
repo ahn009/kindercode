@@ -10,7 +10,11 @@
     "community": "کمیونٹی",
     "login": "لاگ ان",
     "signup": "سائن اپ",
-    "getStarted": "شروع کریں"
+    "getStarted": "شروع کریں",
+    "dashboard": "ڈیش بورڈ",
+    "profile": "پروفائل",
+    "settings": "ترتیبات",
+    "logout": "لاگ آؤٹ"
   },
   "auth": {
     "createAccount": "اکاؤنٹ بنائیں",
@@ -123,5 +127,60 @@
     "ca": "کینیڈا",
     "au": "آسٹریلیا",
     "other": "دیگر"
+  },
+  "hero": {
+    "badge": "بچوں کے لیے AI-پاورڈ کوڈنگ پلیٹ فارم",
+    "headline": "جہاں بچے بنتے ہیں",
+    "headlineHighlight": "مستقبل کے پروگرامر!",
+    "subtitle": "گیمز، کہانیوں اور AI کے ذریعے کوڈنگ سیکھیں۔",
+    "subtitleAge": "6–16 سال کے لیے ڈیزائن کیا گیا۔",
+    "getStartedFree": "مفت شروع کریں",
+    "watchDemo": "ڈیمو دیکھیں",
+    "learnersLabel": "سیکھنے والے",
+    "schoolsLabel": "اسکول",
+    "ratingLabel": "درجہ بندی",
+    "joinToday": "آج شامل ہوں"
+  },
+  "dashboard": {
+    "welcome": "واپس خوش آمدید",
+    "progress": "آپ کی پیشرفت",
+    "dailyChallenge": "روزانہ چیلنج",
+    "achievements": "کامیابیاں",
+    "recommended": "آپ کے لیے تجویز کردہ",
+    "continueLearning": "سیکھنا جاری رکھیں",
+    "streak": "مسلسل دن",
+    "points": "پوائنٹس",
+    "level": "سطح",
+    "startCoding": "کوڈنگ شروع کریں",
+    "viewAll": "سب دیکھیں",
+    "mathGames": "ریاضی کے کھیل",
+    "languageLearning": "زبان سیکھنا",
+    "logicPuzzles": "منطقی پہیلیاں",
+    "creativeArts": "تخلیقی فنون"
+  },
+  "contact": {
+    "title": "ہم سے رابطہ کریں",
+    "subtitle": "ہم آپ سے سننا پسند کریں گے",
+    "name": "آپ کا نام",
+    "namePlaceholder": "اپنا نام درج کریں",
+    "emailField": "ای میل پتہ",
+    "emailPlaceholder": "اپنا ای میل درج کریں",
+    "subject": "موضوع",
+    "subjectPlaceholder": "یہ کس بارے میں ہے؟",
+    "message": "پیغام",
+    "messagePlaceholder": "بتائیں ہم کیسے مدد کر سکتے ہیں...",
+    "send": "پیغام بھیجیں",
+    "sending": "بھیج رہے ہیں...",
+    "success": "پیغام کامیابی سے بھیج دیا گیا! ہم جلد آپ سے رابطہ کریں گے۔",
+    "faqTitle": "اکثر پوچھے جانے والے سوالات",
+    "responseTime": "جواب کا وقت: 24 گھنٹوں کے اندر"
+  },
+  "privacy": {
+    "title": "رازداری کی پالیسی",
+    "lastUpdated": "آخری تازہ کاری"
+  },
+  "terms": {
+    "title": "سروس کی شرائط",
+    "lastUpdated": "آخری تازہ کاری"
   }
 }

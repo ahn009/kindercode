@@ -3,15 +3,16 @@
 import { useState, useRef, useEffect } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { Link, useRouter, usePathname } from '@/i18n/navigation'
-import { Menu, X, Rocket, Globe, ChevronDown } from 'lucide-react'
+import { Menu, X, Rocket, Globe, ChevronDown, LogOut, User, LayoutDashboard, Settings } from 'lucide-react'
 import { SUPPORTED_LANGUAGES } from '@/lib/languages'
+import { useAuth } from '@/context/AuthContext'
 
 export default function Header() {
   const locale = useLocale()
   const t = useTranslations('nav')
+  const { user, logout } = useAuth()
 
   const navLinks = [
-    // Removed home anchor tag
     { href: '/#how-it-works', label: t('howItWorks') },
     { href: '/#learning', label: t('learningMethods') },
     { href: '/#skills', label: t('skillPaths') },
@@ -25,16 +26,28 @@ export default function Header() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
   const langRef = useRef<HTMLDivElement>(null)
+  const userMenuRef = useRef<HTMLDivElement>(null)
 
   const currentLang =
     SUPPORTED_LANGUAGES.find((l) => l.code === locale) ?? SUPPORTED_LANGUAGES[0]
 
-  // Close dropdown when clicking outside
+  // Get user initials for avatar
+  const userInitials = user?.displayName
+    ? user.displayName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
+    : user?.email
+    ? user.email[0].toUpperCase()
+    : 'U'
+
+  // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (langRef.current && !langRef.current.contains(e.target as Node)) {
         setLangOpen(false)
+      }
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -42,13 +55,18 @@ export default function Header() {
   }, [])
 
   function switchLocale(code: string) {
-    // Store preference
     if (typeof window !== 'undefined') {
       localStorage.setItem('kinder-locale', code)
       document.cookie = `NEXT_LOCALE=${code}; path=/; max-age=31536000`
     }
     router.replace(pathname, { locale: code })
     setLangOpen(false)
+  }
+
+  async function handleLogout() {
+    await logout()
+    setUserMenuOpen(false)
+    router.push('/')
   }
 
   return (
@@ -125,20 +143,89 @@ export default function Header() {
               )}
             </div>
 
-            <Link
-              href="/login"
-              className="btn-kinder btn-kinder-secondary btn-kinder-sm bg-transparent text-white border-white/50 hover:bg-white/20"
-            >
-              {t('login')}
-            </Link>
+            {/* Auth buttons or User menu */}
+            {user ? (
+              <div ref={userMenuRef} className="relative">
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-semibold transition-all"
+                  aria-expanded={userMenuOpen}
+                >
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                    style={{ background: 'linear-gradient(135deg, #FF8C42 0%, #FFD93D 100%)' }}>
+                    {userInitials}
+                  </div>
+                  <span className="max-w-[100px] truncate">
+                    {user.displayName ?? user.email?.split('@')[0]}
+                  </span>
+                  <ChevronDown className={`w-3.5 h-3.5 opacity-70 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
 
-            <Link
-              href="/signup"
-              className="btn-kinder btn-kinder-sm text-white transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-              style={{ background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)' }}
-            >
-              {t('getStarted')} 🚀
-            </Link>
+                {userMenuOpen && (
+                  <div
+                    className="absolute right-0 mt-2 w-52 rounded-2xl shadow-2xl border border-white/20 overflow-hidden z-50 py-1"
+                    style={{ background: 'rgba(30,60,114,0.98)', backdropFilter: 'blur(16px)' }}
+                  >
+                    <div className="px-4 py-3 border-b border-white/10">
+                      <p className="text-white font-semibold text-sm truncate">
+                        {user.displayName ?? user.email?.split('@')[0]}
+                      </p>
+                      <p className="text-white/50 text-xs truncate">{user.email}</p>
+                    </div>
+                    <Link
+                      href="/home"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10 transition-colors"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <LayoutDashboard className="w-4 h-4 opacity-70" />
+                      {t('dashboard')}
+                    </Link>
+                    <Link
+                      href="/profile"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10 transition-colors"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <User className="w-4 h-4 opacity-70" />
+                      {t('profile')}
+                    </Link>
+                    <Link
+                      href="/settings"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10 transition-colors"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <Settings className="w-4 h-4 opacity-70" />
+                      {t('settings')}
+                    </Link>
+                    <div className="border-t border-white/10 mt-1">
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-red-400 hover:bg-red-500/10 transition-colors"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        {t('logout')}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="btn-kinder btn-kinder-secondary btn-kinder-sm bg-transparent text-white border-white/50 hover:bg-white/20"
+                >
+                  {t('login')}
+                </Link>
+
+                <Link
+                  href="/signup"
+                  className="btn-kinder btn-kinder-sm text-white transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  style={{ background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)' }}
+                >
+                  {t('getStarted')} 🚀
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -194,21 +281,54 @@ export default function Header() {
                     </button>
                   ))}
                 </div>
-                <Link
-                  href="/login"
-                  className="btn-kinder btn-kinder-secondary bg-transparent text-white border-white/50 text-center"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {t('login')}
-                </Link>
-                <Link
-                  href="/signup"
-                  className="btn-kinder text-white text-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all"
-                  style={{ background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)' }}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {t('getStarted')} 🚀
-                </Link>
+
+                {user ? (
+                  <>
+                    <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10">
+                      <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
+                        style={{ background: 'linear-gradient(135deg, #FF8C42 0%, #FFD93D 100%)' }}>
+                        {userInitials}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-white font-semibold text-sm truncate">
+                          {user.displayName ?? user.email?.split('@')[0]}
+                        </p>
+                        <p className="text-white/50 text-xs truncate">{user.email}</p>
+                      </div>
+                    </div>
+                    <Link
+                      href="/home"
+                      className="btn-kinder btn-kinder-secondary bg-transparent text-white border-white/50 text-center"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {t('dashboard')}
+                    </Link>
+                    <button
+                      onClick={() => { handleLogout(); setMobileMenuOpen(false) }}
+                      className="btn-kinder bg-red-500/20 text-red-400 border border-red-500/30 text-center"
+                    >
+                      {t('logout')}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      className="btn-kinder btn-kinder-secondary bg-transparent text-white border-white/50 text-center"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {t('login')}
+                    </Link>
+                    <Link
+                      href="/signup"
+                      className="btn-kinder text-white text-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all"
+                      style={{ background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)' }}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {t('getStarted')} 🚀
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </nav>

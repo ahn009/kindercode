@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { Shield, Users, Share2, Lightbulb, PartyPopper } from 'lucide-react'
 import { useReveal } from '@/hooks/useReveal'
 

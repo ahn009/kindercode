@@ -10,7 +10,11 @@
     "community": "Comunidade",
     "login": "Entrar",
     "signup": "Cadastrar",
-    "getStarted": "Começar"
+    "getStarted": "Começar",
+    "dashboard": "Painel",
+    "profile": "Perfil",
+    "settings": "Configurações",
+    "logout": "Sair"
   },
   "auth": {
     "createAccount": "Criar Conta",
@@ -123,5 +127,60 @@
     "ca": "Canadá",
     "au": "Austrália",
     "other": "Outro"
+  },
+  "hero": {
+    "badge": "Plataforma de Programação com IA para Crianças",
+    "headline": "Onde as Crianças se Tornam",
+    "headlineHighlight": "Programadores do Futuro!",
+    "subtitle": "Aprenda a programar através de jogos, histórias e IA.",
+    "subtitleAge": "Desenvolvido para idades de 6–16 anos.",
+    "getStartedFree": "Começar Gratuitamente",
+    "watchDemo": "Ver Demo",
+    "learnersLabel": "Alunos",
+    "schoolsLabel": "Escolas",
+    "ratingLabel": "Avaliação",
+    "joinToday": "Junte-se hoje"
+  },
+  "dashboard": {
+    "welcome": "Bem-vindo de volta",
+    "progress": "Seu Progresso",
+    "dailyChallenge": "Desafio Diário",
+    "achievements": "Conquistas",
+    "recommended": "Recomendado para Você",
+    "continueLearning": "Continuar Aprendendo",
+    "streak": "Dias Seguidos",
+    "points": "Pontos",
+    "level": "Nível",
+    "startCoding": "Começar a Programar",
+    "viewAll": "Ver Tudo",
+    "mathGames": "Jogos de Matemática",
+    "languageLearning": "Aprendizado de Idiomas",
+    "logicPuzzles": "Quebra-cabeças Lógicos",
+    "creativeArts": "Artes Criativas"
+  },
+  "contact": {
+    "title": "Fale Conosco",
+    "subtitle": "Adoraríamos ouvir de você",
+    "name": "Seu Nome",
+    "namePlaceholder": "Digite seu nome",
+    "emailField": "Endereço de E-mail",
+    "emailPlaceholder": "Digite seu e-mail",
+    "subject": "Assunto",
+    "subjectPlaceholder": "Sobre o que é isso?",
+    "message": "Mensagem",
+    "messagePlaceholder": "Diga-nos como podemos ajudar...",
+    "send": "Enviar Mensagem",
+    "sending": "Enviando...",
+    "success": "Mensagem enviada com sucesso! Entraremos em contato em breve.",
+    "faqTitle": "Perguntas Frequentes",
+    "responseTime": "Tempo de resposta: dentro de 24 horas"
+  },
+  "privacy": {
+    "title": "Política de Privacidade",
+    "lastUpdated": "Última Atualização"
+  },
+  "terms": {
+    "title": "Termos de Serviço",
+    "lastUpdated": "Última Atualização"
   }
 }

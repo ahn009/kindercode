@@ -10,7 +10,11 @@
     "community": "Communauté",
     "login": "Connexion",
     "signup": "S'inscrire",
-    "getStarted": "Commencer"
+    "getStarted": "Commencer",
+    "dashboard": "Tableau de bord",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "logout": "Déconnexion"
   },
   "auth": {
     "createAccount": "Créer un compte",
@@ -123,5 +127,60 @@
     "ca": "Canada",
     "au": "Australie",
     "other": "Autre"
+  },
+  "hero": {
+    "badge": "Plateforme de codage propulsée par IA pour les enfants",
+    "headline": "Là où les enfants deviennent",
+    "headlineHighlight": "Les codeurs de demain !",
+    "subtitle": "Apprenez à coder à travers des jeux, des histoires et l'IA.",
+    "subtitleAge": "Conçu pour les 6–16 ans.",
+    "getStartedFree": "Commencer gratuitement",
+    "watchDemo": "Voir la démo",
+    "learnersLabel": "Apprenants",
+    "schoolsLabel": "Écoles",
+    "ratingLabel": "Note",
+    "joinToday": "Rejoignez-les aujourd'hui"
+  },
+  "dashboard": {
+    "welcome": "Bon retour",
+    "progress": "Votre progression",
+    "dailyChallenge": "Défi du jour",
+    "achievements": "Réalisations",
+    "recommended": "Recommandé pour vous",
+    "continueLearning": "Continuer à apprendre",
+    "streak": "Jours consécutifs",
+    "points": "Points",
+    "level": "Niveau",
+    "startCoding": "Commencer à coder",
+    "viewAll": "Voir tout",
+    "mathGames": "Jeux de maths",
+    "languageLearning": "Apprentissage des langues",
+    "logicPuzzles": "Puzzles logiques",
+    "creativeArts": "Arts créatifs"
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "subtitle": "Nous aimerions vous entendre",
+    "name": "Votre nom",
+    "namePlaceholder": "Entrez votre nom",
+    "emailField": "Adresse e-mail",
+    "emailPlaceholder": "Entrez votre e-mail",
+    "subject": "Sujet",
+    "subjectPlaceholder": "De quoi s'agit-il ?",
+    "message": "Message",
+    "messagePlaceholder": "Dites-nous comment nous pouvons vous aider...",
+    "send": "Envoyer le message",
+    "sending": "Envoi en cours...",
+    "success": "Message envoyé avec succès ! Nous vous répondrons bientôt.",
+    "faqTitle": "Questions fréquemment posées",
+    "responseTime": "Temps de réponse : sous 24 heures"
+  },
+  "privacy": {
+    "title": "Politique de confidentialité",
+    "lastUpdated": "Dernière mise à jour"
+  },
+  "terms": {
+    "title": "Conditions d'utilisation",
+    "lastUpdated": "Dernière mise à jour"
   }
 }

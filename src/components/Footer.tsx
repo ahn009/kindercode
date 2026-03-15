@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { Facebook, Twitter, Instagram, Youtube } from 'lucide-react'
 
 const footerLinks = {
@@ -18,7 +18,7 @@ const footerLinks = {
     { href: '#', label: 'About Us' },
     { href: '#', label: 'Careers' },
     { href: '#', label: 'Press' },
-    { href: '#', label: 'Contact' },
+    { href: '/contact', label: 'Contact' },
   ],
 }
 
@@ -135,8 +135,9 @@ export default function Footer() {
           {/* Copyright */}
           <p className="text-center text-white/60 text-sm">
             &copy; {new Date().getFullYear()} KinderCode. All rights reserved. |{' '}
-            <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link> |{' '}
-            <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
+            <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link> |{' '}
+            <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link> |{' '}
+            <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
           </p>
         </div>
       </div>
