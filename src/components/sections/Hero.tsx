@@ -114,7 +114,7 @@ export default function Hero() {
           <div className="flex flex-wrap gap-4 mb-10">
             {/* Primary — orange gradient + shine */}
             <Link
-              href="/signup/"
+              href="/select-role"
               className="group relative inline-flex items-center gap-2.5 px-8 py-3.5 rounded-xl font-extrabold text-[1.05rem] text-white overflow-hidden transition-all duration-300 hover:-translate-y-1 active:scale-95"
               style={{
                 background: 'linear-gradient(135deg, #FF8C42 0%, #FFD93D 100%)',

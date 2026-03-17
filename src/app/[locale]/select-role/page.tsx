@@ -109,7 +109,13 @@ export default function SelectRolePage() {
 
   function handleContinue() {
     if (!selected) return
-    router.push(`/onboarding?role=${selected}`)
+    if (selected === 'student') {
+      router.push('/signup')
+    } else if (selected === 'teacher') {
+      router.push('/teacher-signup')
+    } else if (selected === 'school-admin') {
+      router.push('/school-admin-signup')
+    }
   }
 
   return (

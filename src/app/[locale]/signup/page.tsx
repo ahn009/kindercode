@@ -84,7 +84,7 @@ export default function SignupPage() {
         country: formData.country,
         language: formData.language,
       })
-      router.push('/select-role')
+      router.push('/home')
     } catch (err: unknown) {
       setError(getFirebaseError(err))
     } finally {
@@ -97,7 +97,7 @@ export default function SignupPage() {
     setLoading(true)
     try {
       await googleLogin()
-      router.push('/select-role')
+      router.push('/home')
     } catch (err: unknown) {
       setError(getFirebaseError(err))
     } finally {

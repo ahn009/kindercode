@@ -218,7 +218,7 @@ export default function Header() {
                 </Link>
 
                 <Link
-                  href="/signup"
+                  href="/select-role"
                   className="btn-kinder btn-kinder-sm text-white transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                   style={{ background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)' }}
                 >
@@ -320,7 +320,7 @@ export default function Header() {
                       {t('login')}
                     </Link>
                     <Link
-                      href="/signup"
+                      href="/select-role"
                       className="btn-kinder text-white text-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all"
                       style={{ background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)' }}
                       onClick={() => setMobileMenuOpen(false)}
