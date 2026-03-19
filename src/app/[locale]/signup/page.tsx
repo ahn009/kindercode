@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { useRouter } from '@/i18n/navigation'
+import { useSearchParams } from 'next/navigation'
 import { CheckCircle } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { SUPPORTED_LANGUAGES } from '@/lib/languages'
@@ -35,10 +36,14 @@ function getFirebaseError(err: unknown): string {
   return 'Something went wrong. Please try again.'
 }
 
-export default function SignupPage() {
+function SignupContent() {
   const t = useTranslations('auth')
   const { signup, googleLogin } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  // role is only set when the user came through select-role page
+  const role = searchParams.get('role')
 
   const [passwordError, setPasswordError] = useState('')
   const [error, setError] = useState('')
@@ -84,7 +89,9 @@ export default function SignupPage() {
         country: formData.country,
         language: formData.language,
       })
-      router.push('/home')
+      // If role was explicitly selected via select-role page, go to onboarding.
+      // Otherwise go directly to the dashboard (e.g. user navigated to /signup directly).
+      router.push(role ? `/onboarding?role=${role}` : '/home')
     } catch (err: unknown) {
       setError(getFirebaseError(err))
     } finally {
@@ -97,7 +104,7 @@ export default function SignupPage() {
     setLoading(true)
     try {
       await googleLogin()
-      router.push('/home')
+      router.push(role ? `/onboarding?role=${role}` : '/home')
     } catch (err: unknown) {
       setError(getFirebaseError(err))
     } finally {
@@ -436,5 +443,17 @@ export default function SignupPage() {
         </div>
       </main>
     </div>
+  )
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center">
+        <div className="w-12 h-12 rounded-full border-4 border-white border-t-transparent animate-spin" />
+      </div>
+    }>
+      <SignupContent />
+    </Suspense>
   )
 }
