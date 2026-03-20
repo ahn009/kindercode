@@ -10,7 +10,7 @@ import { useAuth } from '@/context/AuthContext'
 export default function Header() {
   const locale = useLocale()
   const t = useTranslations('nav')
-  const { user, logout } = useAuth()
+  const { user, logout, loading } = useAuth()
 
   const navLinks = [
     { href: '/#how-it-works', label: t('howItWorks') },
@@ -146,7 +146,9 @@ export default function Header() {
             )}
 
             {/* Auth buttons or User menu */}
-            {user ? (
+            {loading ? (
+              <div className="w-9 h-9 rounded-full bg-white/20 animate-pulse" />
+            ) : user ? (
               <div ref={userMenuRef} className="relative">
                 {/* Modern avatar button — avatar only, no username text */}
                 <button

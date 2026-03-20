@@ -3,31 +3,6 @@
 import { useState } from 'react'
 import { Link } from '@/i18n/navigation'
 import { useRouter } from '@/i18n/navigation'
-import { useAuth } from '@/context/AuthContext'
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
-import { sendEmailVerification } from 'firebase/auth'
-import { auth, db } from '@/lib/firebase'
-
-function getFirebaseError(err: unknown): string {
-  if (err && typeof err === 'object' && 'code' in err) {
-    const code = (err as { code: string }).code
-    switch (code) {
-      case 'auth/email-already-in-use':
-        return 'An account with this email already exists.'
-      case 'auth/weak-password':
-        return 'Password must be at least 6 characters.'
-      case 'auth/invalid-email':
-        return 'Please enter a valid email address.'
-      case 'auth/network-request-failed':
-        return 'Network error. Check your connection and try again.'
-      case 'auth/too-many-requests':
-        return 'Too many attempts. Please wait a few minutes and try again.'
-      default:
-        return `Something went wrong (${code}). Please try again.`
-    }
-  }
-  return 'Something went wrong. Please try again.'
-}
 
 function generateSchoolId(): string {
   const num = Math.floor(10000 + Math.random() * 90000)
@@ -124,28 +99,6 @@ function SchoolIllustration() {
   )
 }
 
-function FlowStep({ number, text, done }: { number: number; text: string; done?: boolean }) {
-  return (
-    <div className="flex items-start gap-3">
-      <div
-        className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold"
-        style={{
-          background: done ? 'linear-gradient(135deg, #43a047, #27ae60)' : 'linear-gradient(135deg, #4a90e2, #1e88e5)',
-          color: 'white',
-          boxShadow: done ? '0 2px 8px rgba(67,160,71,0.4)' : '0 2px 8px rgba(30,136,229,0.4)',
-        }}
-      >
-        {done ? (
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M5 12l5 5L19 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        ) : number}
-      </div>
-      <p className="text-sm text-gray-700 font-medium leading-snug pt-1">{text}</p>
-    </div>
-  )
-}
-
 const inputStyle = {
   background: 'rgba(255,255,255,0.85)',
   border: '1.5px solid rgba(180,180,220,0.5)',
@@ -166,18 +119,14 @@ function useInputFocus() {
 }
 
 export default function SchoolAdminSignupPage() {
-  const { signup } = useAuth()
   const router = useRouter()
   const focusHandlers = useInputFocus()
 
-  const [step, setStep] = useState<'form' | 'processing' | 'success'>('form')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [passwordError, setPasswordError] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [schoolId, setSchoolId] = useState('')
-
   const [form, setForm] = useState({
     // School info
     schoolName: '',
@@ -204,7 +153,7 @@ export default function SchoolAdminSignupPage() {
     }))
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (form.password !== form.confirmPassword) {
       setPasswordError('Passwords do not match.')
@@ -218,61 +167,15 @@ export default function SchoolAdminSignupPage() {
     setError('')
     setLoading(true)
 
-    try {
-      const generatedSchoolId = generateSchoolId()
-      setSchoolId(generatedSchoolId)
-
-      // Create Firebase auth account for admin
-      await signup(form.adminEmail, form.password, {
-        name: form.adminName,
-        gradeLevel: '',
-        country: form.country,
-        language: 'en',
-      })
-
-      if (auth.currentUser) {
-        const uid = auth.currentUser.uid
-
-        // Update user doc with school-admin role
-        await setDoc(
-          doc(db, 'users', uid),
-          {
-            role: 'school-admin',
-            adminRole: form.adminRole,
-            schoolId: generatedSchoolId,
-          },
-          { merge: true }
-        )
-
-        // Create school document
-        await setDoc(doc(db, 'schools', generatedSchoolId), {
-          schoolId: generatedSchoolId,
-          schoolName: form.schoolName,
-          schoolType: form.schoolType,
-          country: form.country,
-          stateCity: form.stateCity,
-          schoolAddress: form.schoolAddress,
-          officialEmail: form.officialEmail,
-          contactNumber: form.contactNumber,
-          adminUid: uid,
-          adminName: form.adminName,
-          adminEmail: form.adminEmail,
-          status: 'pending-verification',
-          createdAt: serverTimestamp(),
-        })
-
-        // Send email verification
-        await sendEmailVerification(auth.currentUser)
-      }
-
-      // Show processing info briefly, then success screen
-      setStep('processing')
-      setTimeout(() => setStep('success'), 1500)
-    } catch (err: unknown) {
-      setError(getFirebaseError(err))
-    } finally {
-      setLoading(false)
-    }
+    const generatedSchoolId = generateSchoolId()
+    const params = new URLSearchParams({
+      fullName: form.adminName,
+      email: form.adminEmail,
+      schoolId: generatedSchoolId,
+      role: form.adminRole,
+      schoolName: form.schoolName,
+    })
+    router.push(`/school-admin-verification?${params.toString()}`)
   }
 
   // ─── Background decorations ─────────────────────────────────────────────
@@ -322,103 +225,6 @@ export default function SchoolAdminSignupPage() {
       </div>
     </div>
   )
-
-  // ─── Processing / Info Screen ────────────────────────────────────────────
-  if (step === 'processing') {
-    return (
-      <div className="min-h-screen flex flex-col relative overflow-hidden" style={{ background: 'linear-gradient(180deg, #b8c8e8 0%, #c8d8f5 20%, #dce4f5 40%, #e8d8f0 65%, #d8c8e8 85%, #c8b8d8 100%)' }}>
-        {bgDecorations}
-        <main className="flex-1 flex items-center justify-center py-8 px-4 relative z-10">
-          <div className="w-full max-w-md rounded-3xl overflow-hidden" style={cardStyle}>
-            <div className="px-8 pt-7 pb-8">
-              {logoEl}
-              <h1 className="text-center text-xl font-bold text-gray-800 mb-2">What Happens After Submission?</h1>
-              <p className="text-center text-sm text-gray-500 mb-6">System Actions (Backend Flow)</p>
-
-              <div className="space-y-4 mb-6">
-                <FlowStep number={1} text={`Unique School ID is generated: #${schoolId}`} done />
-                <FlowStep number={2} text="School Database is created" done />
-                <FlowStep number={3} text="Admin account is linked to that School ID" done />
-                <FlowStep number={4} text="Verification email sent — School status: Pending Verification" done />
-              </div>
-
-              {/* School ID badge */}
-              <div className="flex items-center justify-center mb-6">
-                <div className="px-5 py-2.5 rounded-2xl font-bold text-lg" style={{ background: 'linear-gradient(135deg, #e8f4ff, #d0e8ff)', border: '2px solid #4a90e2', color: '#1a5fa8', letterSpacing: '0.05em' }}>
-                  #{schoolId}
-                </div>
-              </div>
-
-              <button
-                onClick={() => setStep('success')}
-                className="w-full py-3.5 rounded-2xl text-white font-bold text-base transition-all"
-                style={{ background: 'linear-gradient(135deg, #4a90e2 0%, #1e88e5 50%, #1565c0 100%)', boxShadow: '0 6px 20px rgba(30,136,229,0.4)' }}
-                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(30,136,229,0.5)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 6px 20px rgba(30,136,229,0.4)' }}
-              >
-                Continue →
-              </button>
-            </div>
-          </div>
-        </main>
-      </div>
-    )
-  }
-
-  // ─── Success Screen ──────────────────────────────────────────────────────
-  if (step === 'success') {
-    return (
-      <div className="min-h-screen flex flex-col relative overflow-hidden" style={{ background: 'linear-gradient(180deg, #b8c8e8 0%, #c8d8f5 20%, #dce4f5 40%, #e8d8f0 65%, #d8c8e8 85%, #c8b8d8 100%)' }}>
-        {bgDecorations}
-        <main className="flex-1 flex items-center justify-center py-8 px-4 relative z-10">
-          <div className="w-full max-w-md rounded-3xl overflow-hidden" style={cardStyle}>
-            <div className="px-8 pt-7 pb-8 text-center">
-              {logoEl}
-
-              {/* Success checkmark */}
-              <div className="flex items-center justify-center mb-4">
-                <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #43a047, #27ae60)', boxShadow: '0 6px 24px rgba(67,160,71,0.45)' }}>
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-                    <path d="M5 12l5 5L19 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-              </div>
-
-              <h1 className="text-xl font-bold text-gray-800 mb-1">School Account Created Successfully!</h1>
-              <p className="text-sm text-gray-500 mb-5">But before activation…</p>
-
-              {/* Verification notice */}
-              <div className="rounded-2xl p-4 mb-5 text-left" style={{ background: 'rgba(255,248,220,0.8)', border: '1.5px solid #f39c12' }}>
-                <p className="text-sm text-gray-700 font-semibold mb-1">📧 Verify your email address</p>
-                <p className="text-xs text-gray-500 leading-relaxed">
-                  We&apos;ve sent a verification link to <span className="font-semibold text-gray-700">{form.adminEmail}</span>.
-                  Please check your inbox and click the link to verify your email address and activate your school account.
-                </p>
-              </div>
-
-              {/* Status badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6" style={{ background: 'rgba(243,156,18,0.15)', border: '1.5px solid #f39c12' }}>
-                <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
-                <span className="text-sm font-semibold text-yellow-700">School status: Pending Verification</span>
-              </div>
-
-              <button
-                onClick={() => router.push('/school-admin-dashboard')}
-                className="w-full py-3.5 rounded-2xl text-white font-bold text-base transition-all mb-3"
-                style={{ background: 'linear-gradient(135deg, #4a90e2 0%, #1e88e5 50%, #1565c0 100%)', boxShadow: '0 6px 20px rgba(30,136,229,0.4)' }}
-                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(30,136,229,0.5)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 6px 20px rgba(30,136,229,0.4)' }}
-              >
-                Go to Dashboard →
-              </button>
-
-              <p className="text-xs text-gray-400">Your school ID: <span className="font-bold text-gray-600">#{schoolId}</span></p>
-            </div>
-          </div>
-        </main>
-      </div>
-    )
-  }
 
   // ─── Registration Form ───────────────────────────────────────────────────
   return (
