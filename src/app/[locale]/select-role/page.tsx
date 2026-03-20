@@ -113,8 +113,8 @@ export default function SelectRolePage() {
     // Define role-specific routes
     const routes = {
       student: '/signup', // Universal signup page
-      teacher: '/teacher-signup',
-      'school-admin': '/school-admin-signup'
+      teacher: '/teacher-signup', // Teacher-specific signup page
+      'school-admin': '/school-admin-signup' // School admin-specific signup page
     }
     
     // Navigate to the role-specific signup page with role as query parameter
