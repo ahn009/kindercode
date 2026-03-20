@@ -109,7 +109,16 @@ export default function SelectRolePage() {
 
   function handleContinue() {
     if (!selected) return
-    router.push(`/signup?role=${selected}`)
+    
+    // Define role-specific routes
+    const routes = {
+      student: '/signup', // Universal signup page
+      teacher: '/teacher-signup',
+      'school-admin': '/school-admin-signup'
+    }
+    
+    // Navigate to the role-specific signup page with role as query parameter
+    router.push(`${routes[selected as keyof typeof routes]}?role=${selected}`)
   }
 
   return (

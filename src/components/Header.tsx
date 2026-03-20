@@ -97,73 +97,76 @@ export default function Header() {
 
           {/* Desktop Actions */}
           <div className="hidden lg:flex items-center gap-3">
-            {/* Language Selector */}
-            <div ref={langRef} className="relative">
-              <button
-                onClick={() => setLangOpen(!langOpen)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-semibold transition-all"
-                aria-label="Select language"
-                aria-expanded={langOpen}
-              >
-                <Globe className="w-4 h-4 opacity-80" />
-                <span>{currentLang.flag}</span>
-                <span className="uppercase">{currentLang.code}</span>
-                <ChevronDown
-                  className={`w-3.5 h-3.5 opacity-70 transition-transform ${langOpen ? 'rotate-180' : ''}`}
-                />
-              </button>
-
-              {langOpen && (
-                <div
-                  className="absolute right-0 mt-2 w-48 rounded-2xl shadow-2xl border border-white/20 overflow-hidden z-50"
-                  style={{ background: 'rgba(30,60,114,0.98)', backdropFilter: 'blur(16px)' }}
-                  role="listbox"
-                  aria-label="Language options"
+            {/* Language Selector — hidden for authenticated users */}
+            {!user && (
+              <div ref={langRef} className="relative">
+                <button
+                  onClick={() => setLangOpen(!langOpen)}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-semibold transition-all"
+                  aria-label="Select language"
+                  aria-expanded={langOpen}
                 >
-                  {SUPPORTED_LANGUAGES.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => switchLocale(lang.code)}
-                      className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold transition-colors ${
-                        locale === lang.code
-                          ? 'bg-white/20 text-[#FFD93D]'
-                          : 'text-white/90 hover:bg-white/10'
-                      }`}
-                      role="option"
-                      aria-selected={locale === lang.code}
-                    >
-                      <span className="text-base">{lang.flag}</span>
-                      <span>{lang.name}</span>
-                      {lang.dir === 'rtl' && (
-                        <span className="ml-auto text-xs opacity-50">RTL</span>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+                  <Globe className="w-4 h-4 opacity-80" />
+                  <span>{currentLang.flag}</span>
+                  <span className="uppercase">{currentLang.code}</span>
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 opacity-70 transition-transform ${langOpen ? 'rotate-180' : ''}`}
+                  />
+                </button>
+
+                {langOpen && (
+                  <div
+                    className="dropdown-animate absolute right-0 mt-2 w-48 rounded-2xl shadow-2xl border border-white/20 overflow-hidden z-50"
+                    style={{ background: 'rgba(30,60,114,0.98)', backdropFilter: 'blur(16px)' }}
+                    role="listbox"
+                    aria-label="Language options"
+                  >
+                    {SUPPORTED_LANGUAGES.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => switchLocale(lang.code)}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold transition-colors ${
+                          locale === lang.code
+                            ? 'bg-white/20 text-[#FFD93D]'
+                            : 'text-white/90 hover:bg-white/10'
+                        }`}
+                        role="option"
+                        aria-selected={locale === lang.code}
+                      >
+                        <span className="text-base">{lang.flag}</span>
+                        <span>{lang.name}</span>
+                        {lang.dir === 'rtl' && (
+                          <span className="ml-auto text-xs opacity-50">RTL</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Auth buttons or User menu */}
             {user ? (
               <div ref={userMenuRef} className="relative">
+                {/* Modern avatar button — avatar only, no username text */}
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-semibold transition-all"
+                  className="flex items-center gap-1.5 p-1 rounded-full ring-2 ring-[#FFD93D]/60 hover:ring-[#FFD93D] transition-all duration-200 focus:outline-none focus:ring-[#FFD93D]"
                   aria-expanded={userMenuOpen}
+                  aria-label="User menu"
                 >
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                    style={{ background: 'linear-gradient(135deg, #FF8C42 0%, #FFD93D 100%)' }}>
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-md"
+                    style={{ background: 'linear-gradient(135deg, #FF8C42 0%, #FFD93D 100%)' }}
+                  >
                     {userInitials}
                   </div>
-                  <span className="max-w-[100px] truncate">
-                    {user.displayName ?? user.email?.split('@')[0]}
-                  </span>
-                  <ChevronDown className={`w-3.5 h-3.5 opacity-70 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-3.5 h-3.5 text-white/70 mr-1 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {userMenuOpen && (
                   <div
-                    className="absolute right-0 mt-2 w-52 rounded-2xl shadow-2xl border border-white/20 overflow-hidden z-50 py-1"
+                    className="dropdown-animate absolute right-0 mt-2 w-52 rounded-2xl shadow-2xl border border-white/20 overflow-hidden z-50 py-1"
                     style={{ background: 'rgba(30,60,114,0.98)', backdropFilter: 'blur(16px)' }}
                   >
                     <div className="px-4 py-3 border-b border-white/10">
@@ -174,7 +177,7 @@ export default function Header() {
                     </div>
                     <Link
                       href="/home"
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10 transition-colors"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10 hover:text-white hover:pl-5 transition-all duration-150"
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <LayoutDashboard className="w-4 h-4 opacity-70" />
@@ -182,7 +185,7 @@ export default function Header() {
                     </Link>
                     <Link
                       href="/profile"
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10 transition-colors"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10 hover:text-white hover:pl-5 transition-all duration-150"
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <User className="w-4 h-4 opacity-70" />
@@ -190,7 +193,7 @@ export default function Header() {
                     </Link>
                     <Link
                       href="/settings"
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10 transition-colors"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-white/90 hover:bg-white/10 hover:text-white hover:pl-5 transition-all duration-150"
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <Settings className="w-4 h-4 opacity-70" />
@@ -199,7 +202,7 @@ export default function Header() {
                     <div className="border-t border-white/10 mt-1">
                       <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-red-400 hover:bg-red-500/10 transition-colors"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all duration-150"
                       >
                         <LogOut className="w-4 h-4" />
                         {t('logout')}
@@ -257,30 +260,34 @@ export default function Header() {
                 </Link>
               ))}
               <div className="flex flex-col gap-3 pt-4 border-t border-white/20">
-                {/* Mobile Language Grid */}
-                <p className="text-white/60 text-xs font-semibold uppercase tracking-wider">
-                  Language
-                </p>
-                <div className="grid grid-cols-5 gap-2">
-                  {SUPPORTED_LANGUAGES.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => {
-                        switchLocale(lang.code)
-                        setMobileMenuOpen(false)
-                      }}
-                      title={lang.name}
-                      className={`flex flex-col items-center gap-0.5 p-2 rounded-xl text-xs font-bold transition-all ${
-                        locale === lang.code
-                          ? 'bg-[#FFD93D]/20 text-[#FFD93D] ring-1 ring-[#FFD93D]/50'
-                          : 'text-white/80 hover:bg-white/10'
-                      }`}
-                    >
-                      <span className="text-base">{lang.flag}</span>
-                      <span className="uppercase">{lang.code}</span>
-                    </button>
-                  ))}
-                </div>
+                {/* Mobile Language Grid — hidden for authenticated users */}
+                {!user && (
+                  <>
+                    <p className="text-white/60 text-xs font-semibold uppercase tracking-wider">
+                      Language
+                    </p>
+                    <div className="grid grid-cols-5 gap-2">
+                      {SUPPORTED_LANGUAGES.map((lang) => (
+                        <button
+                          key={lang.code}
+                          onClick={() => {
+                            switchLocale(lang.code)
+                            setMobileMenuOpen(false)
+                          }}
+                          title={lang.name}
+                          className={`flex flex-col items-center gap-0.5 p-2 rounded-xl text-xs font-bold transition-all ${
+                            locale === lang.code
+                              ? 'bg-[#FFD93D]/20 text-[#FFD93D] ring-1 ring-[#FFD93D]/50'
+                              : 'text-white/80 hover:bg-white/10'
+                          }`}
+                        >
+                          <span className="text-base">{lang.flag}</span>
+                          <span className="uppercase">{lang.code}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
 
                 {user ? (
                   <>
