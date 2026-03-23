@@ -36,7 +36,8 @@ export default function Hero() {
         backgroundSize: 'cover, cover',
         backgroundPosition: '85% center, center',
         backgroundRepeat: 'no-repeat, no-repeat',
-        minHeight: 'clamp(480px, 56vw, 660px)',
+        height: 'calc(100dvh - 64px)',
+        minHeight: '480px',
       }}
     >
       {/* Noise texture for premium depth */}
@@ -69,7 +70,7 @@ export default function Hero() {
       {/* Content */}
       <div
         className="relative z-20 max-w-[1280px] mx-auto px-6 md:px-10 xl:px-16"
-        style={{ minHeight: 'clamp(480px, 56vw, 660px)', display: 'flex', alignItems: 'center' }}
+        style={{ height: '100%', display: 'flex', alignItems: 'center' }}
       >
         <div className="max-w-xl py-16 md:py-20 lg:py-24">
 
