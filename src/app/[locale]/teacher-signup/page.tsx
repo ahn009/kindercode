@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from '@/i18n/navigation'
 import { useRouter } from '@/i18n/navigation'
 import { useAuth } from '@/context/AuthContext'
-import { doc, updateDoc } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { doc, updateDoc, getDoc } from 'firebase/firestore'
+import { db, auth } from '@/lib/firebase'
 
 function getFirebaseError(err: unknown): string {
   if (err && typeof err === 'object' && 'code' in err) {
@@ -193,7 +193,7 @@ function RobotMascot() {
 }
 
 export default function TeacherSignupPage() {
-  const { signup } = useAuth()
+  const { signup, user } = useAuth()
   const router = useRouter()
 
   const [showPassword, setShowPassword] = useState(false)
@@ -211,6 +211,31 @@ export default function TeacherSignupPage() {
     country: 'us',
     terms: false,
   })
+
+  // Check if user is already logged in and has teacher role
+  useEffect(() => {
+    const checkUserAndRedirect = async () => {
+      if (user) {
+        try {
+          const userDoc = await getDoc(doc(db, 'users', user.uid))
+          const userData = userDoc.data()
+          
+          if (userData?.role === 'teacher') {
+            // Check if teacher has already completed school connection
+            if (userData?.teacherStatus === 'PENDING_SCHOOL') {
+              router.push('/onboarding/teacher/school-connection')
+            } else if (userData?.teacherStatus === 'ACTIVE') {
+              router.push('/teacher/dashboard')
+            }
+          }
+        } catch (err) {
+          console.error('Error checking user status:', err)
+        }
+      }
+    }
+    
+    checkUserAndRedirect()
+  }, [user, router])
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     const { name, value, type } = e.target
@@ -233,28 +258,34 @@ export default function TeacherSignupPage() {
     setPasswordError('')
     setError('')
     setLoading(true)
+    
     try {
+      // Create the user account
       await signup(formData.email, formData.password, {
         name: formData.name,
         gradeLevel: '',
         country: formData.country,
         language: 'en',
       })
-      // Update role to teacher in Firestore
-      // The user is now signed in; get their uid via auth
-      const { auth } = await import('@/lib/firebase')
-      if (auth.currentUser) {
-        await updateDoc(doc(db, 'users', auth.currentUser.uid), {
-          role: 'teacher',
-        })
+
+      // auth.currentUser is always set synchronously after signup resolves
+      const currentUser = auth.currentUser
+      if (!currentUser) {
+        throw new Error('User not found after signup')
       }
+
+      // Update role to teacher in Firestore
+      await updateDoc(doc(db, 'users', currentUser.uid), {
+        role: 'teacher',
+        teacherStatus: 'PENDING_SCHOOL',
+      })
+
       setSuccess(true)
-      setTimeout(() => {
-        router.push('/home')
-      }, 1800)
+      router.push('/onboarding/teacher/school-connection')
+
     } catch (err: unknown) {
+      console.error('Signup error:', err)
       setError(getFirebaseError(err))
-    } finally {
       setLoading(false)
     }
   }
@@ -442,7 +473,7 @@ export default function TeacherSignupPage() {
                 className="mb-4 px-4 py-3 rounded-2xl text-center font-bold text-lg"
                 style={{ background: 'rgba(107,203,119,0.2)', border: '1.5px solid #6bcb77', color: '#276221' }}
               >
-                ✅ Account Created! Redirecting…
+                ✅ Account Created! Redirecting to school selection...
               </div>
             )}
 
