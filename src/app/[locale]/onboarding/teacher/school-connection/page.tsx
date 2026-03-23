@@ -197,11 +197,14 @@ export default function SchoolConnectionPage() {
   const [requesting, setRequesting] = useState<string | null>(null)
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null)
 
-  // Auth guard
+  // Auth guard — use a small delay so React has time to commit the
+  // auth state update that fires from onAuthStateChanged during signup.
   useEffect(() => {
-    if (!authLoading && !user) {
+    if (authLoading || user) return
+    const timer = setTimeout(() => {
       router.replace('/teacher-signup')
-    }
+    }, 300)
+    return () => clearTimeout(timer)
   }, [user, authLoading, router])
 
   const showToast = (msg: string, type: 'success' | 'error') => {
