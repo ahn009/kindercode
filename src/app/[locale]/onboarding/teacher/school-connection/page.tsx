@@ -187,7 +187,7 @@ function SchoolCard({
 
 export default function SchoolConnectionPage() {
   const router = useRouter()
-  const { user, loading: authLoading } = useAuth()
+  const { user } = useAuth()
 
   const [searchQuery, setSearchQuery] = useState('')
   const [schools, setSchools] = useState<School[]>([])
@@ -197,15 +197,14 @@ export default function SchoolConnectionPage() {
   const [requesting, setRequesting] = useState<string | null>(null)
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null)
 
-  // Auth guard — use a small delay so React has time to commit the
-  // auth state update that fires from onAuthStateChanged during signup.
-  useEffect(() => {
-    if (authLoading || user) return
-    const timer = setTimeout(() => {
-      router.replace('/teacher-signup')
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [user, authLoading, router])
+  // Auth guard temporarily disabled — page accessible to all users
+  // useEffect(() => {
+  //   if (authLoading || user) return
+  //   const timer = setTimeout(() => {
+  //     router.replace('/teacher-signup')
+  //   }, 300)
+  //   return () => clearTimeout(timer)
+  // }, [user, authLoading, router])
 
   const showToast = (msg: string, type: 'success' | 'error') => {
     setToast({ msg, type })
@@ -312,16 +311,6 @@ export default function SchoolConnectionPage() {
     }
   }
 
-  if (authLoading) {
-    return (
-      <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ background: 'linear-gradient(180deg, #b8c8e8 0%, #c8d8f5 20%, #dce4f5 40%, #e8d8f0 65%, #d8c8e8 85%, #c8b8d8 100%)' }}
-      >
-        <div className="w-10 h-10 rounded-full border-4 border-white border-t-transparent animate-spin" />
-      </div>
-    )
-  }
 
   return (
     <div

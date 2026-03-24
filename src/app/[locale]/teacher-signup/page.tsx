@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from '@/i18n/navigation'
 import { useRouter } from '@/i18n/navigation'
 import { useAuth } from '@/context/AuthContext'
-import { doc, updateDoc, getDoc } from 'firebase/firestore'
+import { doc, updateDoc } from 'firebase/firestore'
 import { db, auth } from '@/lib/firebase'
 
 function getFirebaseError(err: unknown): string {
@@ -193,7 +193,7 @@ function RobotMascot() {
 }
 
 export default function TeacherSignupPage() {
-  const { signup, user } = useAuth()
+  const { signup } = useAuth()
   const router = useRouter()
 
   const [showPassword, setShowPassword] = useState(false)
@@ -211,31 +211,6 @@ export default function TeacherSignupPage() {
     country: 'us',
     terms: false,
   })
-
-  // Check if user is already logged in and has teacher role
-  useEffect(() => {
-    const checkUserAndRedirect = async () => {
-      if (user) {
-        try {
-          const userDoc = await getDoc(doc(db, 'users', user.uid))
-          const userData = userDoc.data()
-          
-          if (userData?.role === 'teacher') {
-            // Check if teacher has already completed school connection
-            if (userData?.teacherStatus === 'PENDING_SCHOOL') {
-              router.push('/onboarding/teacher/school-connection')
-            } else if (userData?.teacherStatus === 'ACTIVE') {
-              router.push('/teacher/dashboard')
-            }
-          }
-        } catch (err) {
-          console.error('Error checking user status:', err)
-        }
-      }
-    }
-    
-    checkUserAndRedirect()
-  }, [user, router])
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     const { name, value, type } = e.target
@@ -281,7 +256,7 @@ export default function TeacherSignupPage() {
       })
 
       setSuccess(true)
-      router.push('/onboarding/teacher/school-connection')
+      window.location.href = '/en/onboarding/teacher/school-connection'
 
     } catch (err: unknown) {
       console.error('Signup error:', err)
