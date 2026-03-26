@@ -62,26 +62,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Set display name on the Firebase Auth profile
     await updateProfile(newUser, { displayName: profile.name })
 
-    // Persist full profile to Firestore
-    await setDoc(doc(db, 'users', newUser.uid), {
-      uid: newUser.uid,
-      email,
-      name: profile.name,
-      gradeLevel: profile.gradeLevel,
-      country: profile.country,
-      preferredLanguage: profile.language,
-      role: null,           // set during select-role
-      avatar: null,         // set during onboarding
-      learningStyle: null,  // set during onboarding
-      goals: [],            // set during onboarding
-      schoolType: null,     // set during onboarding
-      onboardingComplete: false,
-      streak: 0,
-      points: 0,
-      level: 1,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    })
+    // Persist full profile to Firestore (non-blocking — a DB provisioning issue
+    // must not prevent the user from completing auth and reaching onboarding).
+    try {
+      await setDoc(doc(db, 'users', newUser.uid), {
+        uid: newUser.uid,
+        email,
+        name: profile.name,
+        gradeLevel: profile.gradeLevel,
+        country: profile.country,
+        preferredLanguage: profile.language,
+        role: null,
+        avatar: null,
+        learningStyle: null,
+        goals: [],
+        schoolType: null,
+        onboardingComplete: false,
+        streak: 0,
+        points: 0,
+        level: 1,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      })
+    } catch (firestoreErr) {
+      console.warn('[AuthContext] Firestore setDoc failed (non-blocking):', firestoreErr)
+    }
   }
 
   async function login(email: string, password: string, rememberMe = true) {

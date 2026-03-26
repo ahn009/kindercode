@@ -289,7 +289,7 @@ export default function PendingApprovalPage() {
                 </Link>
 
                 <Link
-                  href="/onboarding/teacher/register-school"
+                  href="/onboarding/teacher/pending-approval"
                   className="flex w-full items-center justify-center gap-2 py-3 rounded-2xl font-bold text-sm mb-2 transition-all"
                   style={{ background: 'linear-gradient(135deg, #52b788, #43a047)', boxShadow: '0 5px 16px rgba(67,160,71,0.35)', color: 'white' }}
                 >
@@ -453,6 +453,20 @@ export default function PendingApprovalPage() {
                 <p className="mt-3 text-xs text-gray-400 text-center">
                   This page updates automatically when the admin responds.
                 </p>
+
+                {/* Go to Dashboard — always visible */}
+                <div className="mt-4">
+                  <Link
+                    href="/teacher/welcome"
+                    className="flex w-full items-center justify-center gap-2 py-3 rounded-2xl text-white font-bold text-sm transition-all"
+                    style={{ background: 'linear-gradient(135deg, #52b788, #43a047)', boxShadow: '0 5px 16px rgba(67,160,71,0.35)' }}
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                      <path d="M5 12h14M13 6l6 6-6 6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    Go to Dashboard
+                  </Link>
+                </div>
               </>
             )}
           </div>

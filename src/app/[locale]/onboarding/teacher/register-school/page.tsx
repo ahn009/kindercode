@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
-import { useRouter } from '@/i18n/navigation'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { Link } from '@/i18n/navigation'
 import { useAuth } from '@/context/AuthContext'
 import { doc, collection, addDoc, updateDoc, serverTimestamp } from 'firebase/firestore'
@@ -235,11 +234,20 @@ function UploadProgress({ percent }: { percent: number }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function RegisterSchoolPage() {
-  const router = useRouter()
   const { user } = useAuth()
 
   const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
+  const navigated = useRef(false)
+
+  useEffect(() => {
+    if (!success) return
+    if (navigated.current) return
+    navigated.current = true
+    const locale = window.location.pathname.split('/')[1] || 'en'
+    window.location.replace(`/${locale}/onboarding/teacher/pending-approval`)
+  }, [success])
   const [uploadError, setUploadError] = useState('')
   const [uploadPercent, setUploadPercent] = useState(0)
   const [logoFile, setLogoFile] = useState<File | null>(null)
@@ -347,18 +355,22 @@ export default function RegisterSchoolPage() {
         }
       }
 
-      // 3 — Update teacher profile
-      await updateDoc(doc(db, 'users', user.uid), {
-        schoolId: schoolRef.id,
-        schoolName: form.schoolName,
-        schoolLogo: logoUrl,
-        isSchoolAdmin: true,
-        teacherStatus: 'ACTIVE',
-        onboardingComplete: true,
-        updatedAt: serverTimestamp(),
-      })
+      // 3 — Update teacher profile (non-blocking)
+      try {
+        await updateDoc(doc(db, 'users', user.uid), {
+          schoolId: schoolRef.id,
+          schoolName: form.schoolName,
+          schoolLogo: logoUrl,
+          isSchoolAdmin: true,
+          teacherStatus: 'ACTIVE',
+          onboardingComplete: true,
+          updatedAt: serverTimestamp(),
+        })
+      } catch (profileErr) {
+        console.warn('⚠️ Profile update failed (non-blocking):', profileErr)
+      }
 
-      router.push('/home')
+      setSuccess(true)
     } catch (err) {
       console.error(err)
       setError('Failed to register school. Please try again.')

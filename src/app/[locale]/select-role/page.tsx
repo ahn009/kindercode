@@ -109,16 +109,17 @@ export default function SelectRolePage() {
 
   function handleContinue() {
     if (!selected) return
-    
-    // Define role-specific routes
-    const routes = {
-      student: '/signup', // Universal signup page
-      teacher: '/teacher-signup', // Teacher-specific signup page
-      'school-admin': '/school-admin-signup' // School admin-specific signup page
+
+    const routes: Record<string, string> = {
+      student: '/signup',
+      teacher: '/teacher-signup',
+      'school-admin': '/school-admin-signup',
     }
-    
-    // Navigate to the role-specific signup page with role as query parameter
-    router.push(`${routes[selected as keyof typeof routes]}?role=${selected}`)
+
+    // Persist role without polluting the URL — sessionStorage survives client-side nav
+    sessionStorage.setItem('selectedRole', selected)
+
+    router.push(routes[selected] as Parameters<typeof router.push>[0])
   }
 
   return (

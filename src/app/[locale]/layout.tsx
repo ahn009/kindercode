@@ -4,8 +4,7 @@ import { getMessages } from 'next-intl/server'
 import { routing } from '@/i18n/routing'
 import { SUPPORTED_LANGUAGES } from '@/lib/languages'
 import Providers from '@/components/Providers'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
+import ConditionalPublicLayout from '@/components/ConditionalPublicLayout'
 import LocaleHtmlAttributes from '@/components/LocaleHtmlAttributes'
 import type { Metadata } from 'next'
 
@@ -58,9 +57,9 @@ export default async function LocaleLayout({
       {/* Updates <html lang="…" dir="…"> on the client after hydration */}
       <LocaleHtmlAttributes locale={locale} dir={dir} />
       <Providers>
-        <Header />
-        {children}
-        <Footer />
+        <ConditionalPublicLayout>
+          {children}
+        </ConditionalPublicLayout>
       </Providers>
     </NextIntlClientProvider>
   )

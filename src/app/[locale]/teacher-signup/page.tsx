@@ -1,8 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from '@/i18n/navigation'
-import { useRouter } from '@/i18n/navigation'
 import { useAuth } from '@/context/AuthContext'
 import { doc, updateDoc } from 'firebase/firestore'
 import { db, auth } from '@/lib/firebase'
@@ -194,7 +193,6 @@ function RobotMascot() {
 
 export default function TeacherSignupPage() {
   const { signup } = useAuth()
-  const router = useRouter()
 
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -202,6 +200,23 @@ export default function TeacherSignupPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+
+  const navigated = useRef(false)
+
+  useEffect(() => {
+    if (!success) return
+    if (navigated.current) return
+    navigated.current = true
+
+    const locale = window.location.pathname.split('/')[1] || 'en'
+    const target = `/${locale}/onboarding/teacher/school-connection`
+
+    console.log('🚀 TRIGGERING NAVIGATION')
+    console.log('📍 Navigating to:', target)
+
+    sessionStorage.setItem('fromTeacherSignup', 'true')
+    window.location.replace(target)
+  }, [success])
 
   const [formData, setFormData] = useState({
     name: '',
@@ -249,14 +264,21 @@ export default function TeacherSignupPage() {
         throw new Error('User not found after signup')
       }
 
-      // Update role to teacher in Firestore
-      await updateDoc(doc(db, 'users', currentUser.uid), {
-        role: 'teacher',
-        teacherStatus: 'PENDING_SCHOOL',
-      })
+      // Non-blocking Firestore write — a missing/misconfigured DB must not
+      // prevent the teacher from reaching onboarding.
+      try {
+        await updateDoc(doc(db, 'users', currentUser.uid), {
+          role: 'teacher',
+          teacherStatus: 'PENDING_SCHOOL',
+        })
+      } catch (firestoreErr) {
+        console.warn('⚠️ Firestore updateDoc failed (non-blocking):', firestoreErr)
+        // Firestore can be retried on the onboarding page; auth succeeded so continue.
+      }
 
+      console.log('✅ Account created - triggering navigation')
       setSuccess(true)
-      window.location.href = '/en/onboarding/teacher/school-connection'
+      // Navigation is handled by the useEffect above — do not call router.push here.
 
     } catch (err: unknown) {
       console.error('Signup error:', err)

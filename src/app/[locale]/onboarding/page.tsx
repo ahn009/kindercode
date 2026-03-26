@@ -1,41 +1,27 @@
 'use client'
 
-import { Suspense, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useEffect } from 'react'
 import { useRouter } from '@/i18n/navigation'
 
-function OnboardingRouter() {
-  const searchParams = useSearchParams()
+export default function OnboardingPage() {
   const router = useRouter()
-  const role = searchParams.get('role') ?? 'student'
 
   useEffect(() => {
+    const role = sessionStorage.getItem('selectedRole')
+
     if (role === 'teacher') {
-      router.replace('/teacher-signup')
+      router.replace('/onboarding/teacher/school-connection')
     } else if (role === 'school-admin') {
       router.replace('/school-admin-signup')
     } else {
-      router.replace('/signup')
+      // 'student' or no role (direct navigation to /onboarding)
+      router.replace('/home')
     }
-  }, [role, router])
+  }, [router])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center">
       <div className="w-12 h-12 rounded-full border-4 border-white border-t-transparent animate-spin" />
     </div>
-  )
-}
-
-export default function OnboardingPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center">
-          <div className="w-12 h-12 rounded-full border-4 border-white border-t-transparent animate-spin" />
-        </div>
-      }
-    >
-      <OnboardingRouter />
-    </Suspense>
   )
 }
