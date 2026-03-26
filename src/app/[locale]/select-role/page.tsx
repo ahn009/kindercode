@@ -4,9 +4,9 @@ import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
 
-const ROLE_IDS = ['student', 'teacher', 'school-admin'] as const
+const ROLE_IDS = ['student', 'teacher', 'school-admin', 'parent'] as const
 
-// Inline SVG illustrations (unchanged from original)
+// Inline SVG illustrations
 const ILLUSTRATIONS: Record<string, React.ReactNode> = {
   student: (
     <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
@@ -94,6 +94,33 @@ const ILLUSTRATIONS: Record<string, React.ReactNode> = {
       <path d="M23 49 Q27 52 31 49" stroke="#333" strokeWidth="1.5" fill="none" strokeLinecap="round" />
     </svg>
   ),
+  parent: (
+    <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+      <rect width="120" height="120" rx="12" fill="#fff8f0" />
+      {/* Parent adult */}
+      <circle cx="45" cy="32" r="14" fill="#ffd5a0" />
+      <path d="M31 30 Q31 18 45 18 Q59 18 59 30 Q59 22 45 20 Q33 20 31 30Z" fill="#8b4513" />
+      <circle cx="41" cy="32" r="1.5" fill="#333" />
+      <circle cx="49" cy="32" r="1.5" fill="#333" />
+      <path d="M41 37 Q45 40 49 37" stroke="#333" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+      <rect x="35" y="46" width="20" height="28" rx="5" fill="#e07b54" />
+      {/* Parent arms around child */}
+      <path d="M35 55 Q20 60 22 75" stroke="#ffd5a0" strokeWidth="6" strokeLinecap="round" fill="none" />
+      <path d="M55 55 Q70 58 68 72" stroke="#ffd5a0" strokeWidth="6" strokeLinecap="round" fill="none" />
+      {/* Child */}
+      <circle cx="60" cy="70" r="10" fill="#ffe0b8" />
+      <path d="M50 68 Q50 60 60 60 Q70 60 70 68 Q70 62 60 61 Q52 61 50 68Z" fill="#c8860a" />
+      <circle cx="57" cy="70" r="1.2" fill="#333" />
+      <circle cx="63" cy="70" r="1.2" fill="#333" />
+      <path d="M57 74 Q60 76 63 74" stroke="#333" strokeWidth="1.2" fill="none" strokeLinecap="round" />
+      <rect x="52" y="80" width="16" height="18" rx="4" fill="#6bcb77" />
+      {/* Heart */}
+      <path d="M58 25 Q60 22 62 25 Q65 22 66 26 Q66 30 60 34 Q54 30 54 26 Q55 22 58 25Z" fill="#ff6b6b" opacity="0.8" />
+      {/* Stars */}
+      <text x="82" y="30" fontSize="9" fill="#ffd93d">✦</text>
+      <text x="10" y="90" fontSize="7" fill="#ff6b6b">✦</text>
+    </svg>
+  ),
 }
 
 export default function SelectRolePage() {
@@ -105,6 +132,7 @@ export default function SelectRolePage() {
     { id: 'student', label: t('student') },
     { id: 'teacher', label: t('teacher') },
     { id: 'school-admin', label: t('schoolAdmin') },
+    { id: 'parent', label: 'Parent' },
   ]
 
   function handleContinue() {
@@ -114,11 +142,10 @@ export default function SelectRolePage() {
       student: '/signup',
       teacher: '/teacher-signup',
       'school-admin': '/school-admin-signup',
+      parent: '/parent/access-code',
     }
 
-    // Persist role without polluting the URL — sessionStorage survives client-side nav
     sessionStorage.setItem('selectedRole', selected)
-
     router.push(routes[selected] as Parameters<typeof router.push>[0])
   }
 
@@ -129,7 +156,7 @@ export default function SelectRolePage() {
         background: 'linear-gradient(180deg, #c9d8f5 0%, #dce8ff 35%, #e8d5f5 65%, #d0c8e8 100%)',
       }}
     >
-      {/* Decorative background (clouds, stars, confetti) */}
+      {/* Decorative background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         <div className="absolute rounded-full opacity-60" style={{ width: 260, height: 80, top: '8%', left: '-4%', background: 'rgba(255,255,255,0.7)', filter: 'blur(8px)' }} />
         <div className="absolute rounded-full opacity-50" style={{ width: 200, height: 60, top: '6%', left: '3%', background: 'rgba(255,255,255,0.8)', filter: 'blur(4px)' }} />
@@ -168,8 +195,8 @@ export default function SelectRolePage() {
           <h1 className="text-2xl font-bold text-gray-700 mt-1">{t('title')}</h1>
         </div>
 
-        {/* Role Cards */}
-        <div className="grid grid-cols-3 gap-4 mt-8">
+        {/* Role Cards — 2×2 grid */}
+        <div className="grid grid-cols-2 gap-4 mt-8">
           {ROLES.map((role) => {
             const isSelected = selected === role.id
             return (
