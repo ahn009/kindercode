@@ -8,6 +8,7 @@ import Footer from './Footer'
 // These pages own their full-screen chrome (dashboards, etc.).
 const APP_PREFIXES = [
   '/teacher/',
+  '/parent/',
 ]
 
 export default function ConditionalPublicLayout({
