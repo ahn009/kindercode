@@ -7,15 +7,10 @@ import Footer from './Footer'
 // Path segments (after the locale prefix) where Header/Footer must NOT render.
 // These pages own their full-screen chrome (dashboards, etc.).
 const APP_PREFIXES = [
-  '/teacher/',
-  '/parent/',
+  '/teacher/dashboard',
+  '/parent/dashboard',
   '/school-admin-dashboard',
-  '/school-admin-signup',
-  '/school-admin-verification',
-  '/profile',
-  '/settings',
-  '/onboarding/',
-  '/select-role',
+  '/home',
 ]
 
 export default function ConditionalPublicLayout({
