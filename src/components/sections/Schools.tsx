@@ -95,13 +95,53 @@ export default function Schools() {
       <div className="container-kinder relative z-10">
 
         {/* Heading */}
-        <div className="text-center mb-12 reveal">
+        <div className="text-center mb-8 reveal">
           <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-3">
             For Schools
           </h2>
           <p className="text-lg text-slate-500 max-w-md mx-auto">
             Empower Your Students through Coding!
           </p>
+
+          {/* Top icon feature row */}
+          <div className="flex flex-wrap justify-center gap-3 mt-6">
+            {[
+              { icon: '📖', label: 'Get Curriculum' },
+              { icon: '📊', label: 'Monitor Progress' },
+              { icon: '👥', label: 'Engage Students' },
+              { icon: '🏅', label: 'Get Certified' },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-slate-700"
+                style={{
+                  background: 'rgba(255,255,255,0.9)',
+                  border: '1px solid rgba(186,230,253,0.7)',
+                  boxShadow: '0 2px 12px rgba(14,116,144,0.08)',
+                }}
+              >
+                <span className="text-base">{item.icon}</span>
+                {item.label}
+              </div>
+            ))}
+          </div>
+
+          {/* Request a Demo button */}
+          <div className="mt-6">
+            <Link
+              href="#"
+              className="inline-flex items-center gap-2 px-7 py-3 rounded-full font-bold text-base text-white transition-all duration-300 hover:scale-105 active:scale-95"
+              style={{
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                boxShadow: '0 4px 20px rgba(16,185,129,0.35)',
+              }}
+            >
+              Request a Demo
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
+          </div>
         </div>
 
         {/* Feature Cards — 4 in a row */}

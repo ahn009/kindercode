@@ -9,6 +9,13 @@ import Footer from './Footer'
 const APP_PREFIXES = [
   '/teacher/',
   '/parent/',
+  '/school-admin-dashboard',
+  '/school-admin-signup',
+  '/school-admin-verification',
+  '/profile',
+  '/settings',
+  '/onboarding/',
+  '/select-role',
 ]
 
 export default function ConditionalPublicLayout({

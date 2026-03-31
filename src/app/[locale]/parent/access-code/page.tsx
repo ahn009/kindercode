@@ -2,18 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from '@/i18n/navigation'
-
-// Mock validation — replace with real API call
-function validateParentCode(code: string, childName: string): { valid: boolean; child?: { name: string; grade: string; teacher: string; school: string } } {
-  const mockCodes: Record<string, { name: string; grade: string; teacher: string; school: string }> = {
-    'KC-PARENT-8472': { name: 'Daniel Johnson', grade: 'Grade 5 – Coding Basics', teacher: 'Ms. Sarah', school: 'Green Valley School' },
-    'KC-PARENT-1234': { name: 'Emma Wilson', grade: 'Grade 3 – Scratch Basics', teacher: 'Mr. Adams', school: 'Bright Minds Academy' },
-  }
-  const child = mockCodes[code.toUpperCase()]
-  if (!child) return { valid: false }
-  const nameMatch = childName.trim().toLowerCase() === child.name.toLowerCase()
-  return nameMatch ? { valid: true, child } : { valid: false }
-}
+import { collection, query, where, getDocs } from 'firebase/firestore'
+import { db } from '@/lib/firebase'
 
 function KinderCodeLogo() {
   return (
@@ -41,23 +31,46 @@ export default function ParentAccessCodePage() {
     setLoading(true)
     setError(false)
 
-    // Simulate async validation
-    await new Promise(r => setTimeout(r, 600))
-    const result = validateParentCode(accessCode, childName)
-    setLoading(false)
+    try {
+      // Query Firestore for a student matching the access code
+      const snap = await getDocs(
+        query(
+          collection(db, 'students'),
+          where('accessCode', '==', accessCode.trim().toUpperCase())
+        )
+      )
 
-    if (!result.valid || !result.child) {
+      if (snap.empty) {
+        setError(true)
+        setLoading(false)
+        return
+      }
+
+      // Find a doc whose name matches (case-insensitive)
+      const match = snap.docs.find(
+        (d) => (d.data().name as string)?.toLowerCase() === childName.trim().toLowerCase()
+      )
+
+      if (!match) {
+        setError(true)
+        setLoading(false)
+        return
+      }
+
+      const data = match.data()
+      const params = new URLSearchParams({
+        studentId: match.id,
+        childName: data.name ?? childName,
+        grade: data.grade ?? '',
+        teacher: data.teacher ?? '',
+        school: data.school ?? '',
+      })
+      router.push(`/parent/confirm-child?${params.toString()}` as Parameters<typeof router.push>[0])
+    } catch {
       setError(true)
-      return
+    } finally {
+      setLoading(false)
     }
-
-    const params = new URLSearchParams({
-      childName: result.child.name,
-      grade: result.child.grade,
-      teacher: result.child.teacher,
-      school: result.child.school,
-    })
-    router.push(`/parent/confirm-child?${params.toString()}` as Parameters<typeof router.push>[0])
   }
 
   return (

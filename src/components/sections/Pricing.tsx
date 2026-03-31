@@ -31,7 +31,7 @@ const pricingPlans = [
     price: '5',
     description: 'Great for serious learners',
     accentColor: '#3b82f6',
-    badgeText: 'POPULAR',
+    badgeText: 'Bonus',
     badgeColor: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
     features: [
       'All Free Features',
@@ -229,9 +229,9 @@ export default function Pricing() {
       {/* Content */}
       <div className="container-kinder relative z-10">
         <div className="text-center mb-12 reveal">
-          <h2 className="section-title text-white">Pricing</h2>
+          <h2 className="section-title text-white">Compete. Build. Win.</h2>
           <p className="text-blue-200 text-lg mt-2 opacity-80">
-            Choose the plan that works best for your child
+            Join weekly, and monthly coding competitions to be the best coder.
           </p>
         </div>
 
@@ -241,20 +241,20 @@ export default function Pricing() {
               key={plan.id}
               className="relative flex flex-col rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2"
               style={{
-                background: 'rgba(255,255,255,0.08)',
+                background: 'rgba(255,255,255,0.97)',
                 backdropFilter: 'blur(16px)',
                 WebkitBackdropFilter: 'blur(16px)',
                 border: plan.popular
                   ? `2px solid ${plan.accentColor}`
-                  : '1px solid rgba(255,255,255,0.15)',
+                  : '2px solid rgba(220,220,240,0.4)',
                 boxShadow: plan.popular
                   ? `0 8px 40px ${plan.buttonShadow}, 0 0 0 1px rgba(255,255,255,0.05)`
-                  : '0 8px 32px rgba(0,0,0,0.3)',
+                  : '0 8px 32px rgba(0,0,0,0.1)',
               }}
             >
               {/* Top accent bar */}
               <div
-                className="absolute top-0 left-6 right-6 h-0.5 rounded-full"
+                className="absolute top-0 left-0 right-0 h-1 rounded-t-3xl"
                 style={{ background: plan.buttonGradient }}
               />
 
@@ -273,13 +273,13 @@ export default function Pricing() {
 
               {/* Plan name & description */}
               <div className="text-center mb-4 pt-2">
-                <h3 className="text-xl font-bold text-white mb-1">{plan.name}</h3>
-                <p className="text-blue-200 text-sm opacity-75">{plan.description}</p>
+                <h3 className="text-xl font-bold text-gray-800 mb-1">{plan.name}</h3>
+                <p className="text-gray-500 text-sm opacity-75">{plan.description}</p>
               </div>
 
               {/* Price */}
               <div className="flex items-end justify-center gap-1 mb-2">
-                <span className="text-blue-200 text-xl font-semibold mb-2">$</span>
+                <span className="text-gray-500 text-xl font-semibold mb-2">$</span>
                 <span
                   className="text-6xl font-extrabold leading-none"
                   style={{
@@ -292,7 +292,7 @@ export default function Pricing() {
                   {plan.price}
                 </span>
                 <div className="flex flex-col mb-2 ml-1">
-                  <span className="text-blue-200 text-xs leading-tight opacity-75">/month</span>
+                  <span className="text-gray-500 text-xs leading-tight opacity-75">/month</span>
                   <span
                     className="text-xs font-bold rounded-full px-2 py-0.5 mt-1 text-white"
                     style={{ background: plan.buttonGradient }}
@@ -311,10 +311,23 @@ export default function Pricing() {
               {/* Features */}
               <ul className="space-y-3 mb-6 flex-1">
                 {plan.features.map((feature, index) => (
-                  <li key={index} className="flex items-center gap-2 text-blue-100 text-sm">
-                    <span style={{ color: plan.accentColor }} className="text-base leading-none flex-shrink-0">
-                      •
-                    </span>
+                  <li key={index} className="flex items-center gap-2 text-gray-600 text-sm">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      className="flex-shrink-0"
+                      style={{ color: plan.accentColor }}
+                    >
+                      <path
+                        d="M5 12L10 17L19 8"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                     {feature}
                   </li>
                 ))}

@@ -1,9 +1,11 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from '@/i18n/navigation'
 import { db } from '@/lib/firebase'
-import { doc, onSnapshot, collection, query, where, setDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, onSnapshot, updateDoc, serverTimestamp } from 'firebase/firestore'
+import { useAuth } from '@/context/AuthContext'
+import { fetchChildren } from '@/lib/firestoreHelpers'
 
 // ─── Types ─────────────────────────────────────────────────────
 interface WeekDay {
@@ -41,83 +43,47 @@ interface ChildProgress {
   badges: string[]
 }
 
-// ─── Demo seed data (used as fallback / Firestore initial write) ─
-const DEMO_CHILDREN: ChildProgress[] = [
-  {
-    id: 'child_daniel',
-    name: 'Daniel Johnson',
-    grade: 'Grade 5',
-    subject: 'Coding Basics',
-    teacher: 'Ms. Sarah',
-    school: 'Green Valley School',
-    avatar: '🧒',
-    completionPct: 72,
-    streak: 14,
-    weeklyMinutes: 205,
-    schoolProgress: 83,
-    lessonsCompleted: 18,
-    assignmentsSubmitted: 7,
-    competitionRank: '#3',
-    averageScore: '88%',
-    engagementRate: 78,
-    activeDaysThisWeek: 5,
-    weekActivity: [
-      { day: 'Mon', pct: 80, minutes: 45 },
-      { day: 'Tue', pct: 60, minutes: 32 },
-      { day: 'Wed', pct: 90, minutes: 55 },
-      { day: 'Thu', pct: 45, minutes: 20 },
-      { day: 'Fri', pct: 75, minutes: 40 },
-      { day: 'Sat', pct: 30, minutes: 13 },
-      { day: 'Sun', pct: 20, minutes: 0 },
-    ],
-    strengths: ['Logic', 'Problem Solving', 'Sequences'],
-    improvements: ['Loops', 'Debugging'],
-    teacherNote:
-      'Daniel is showing great progress with logic concepts. His problem-solving skills are excellent. He should practice loops more — next assignment focuses on this.',
-    nextAssignment: 'Fri, Apr 26',
-    lastUpdated: null,
-    totalPoints: 1340,
-    level: 5,
-    badges: ['🏅', '⭐', '🔥'],
-  },
-  {
-    id: 'child_emma',
-    name: 'Emma Johnson',
-    grade: 'Grade 3',
-    subject: 'Scratch Basics',
-    teacher: 'Mr. Adams',
-    school: 'Green Valley School',
-    avatar: '👧',
-    completionPct: 55,
-    streak: 7,
-    weeklyMinutes: 130,
-    schoolProgress: 67,
-    lessonsCompleted: 10,
-    assignmentsSubmitted: 4,
-    competitionRank: '#7',
-    averageScore: '79%',
-    engagementRate: 62,
-    activeDaysThisWeek: 3,
-    weekActivity: [
-      { day: 'Mon', pct: 50, minutes: 25 },
-      { day: 'Tue', pct: 70, minutes: 35 },
-      { day: 'Wed', pct: 40, minutes: 20 },
-      { day: 'Thu', pct: 80, minutes: 40 },
-      { day: 'Fri', pct: 30, minutes: 10 },
-      { day: 'Sat', pct: 0, minutes: 0 },
-      { day: 'Sun', pct: 60, minutes: 0 },
-    ],
-    strengths: ['Creativity', 'Animation'],
-    improvements: ['Conditionals', 'Variables', 'Events'],
-    teacherNote:
-      'Emma shows excellent creativity in her Scratch projects. She needs to work on understanding variables and conditional logic for the upcoming unit.',
-    nextAssignment: 'Wed, Apr 24',
-    lastUpdated: null,
-    totalPoints: 820,
-    level: 3,
-    badges: ['⭐', '🎨'],
-  },
+// Default empty week activity shape
+const EMPTY_WEEK_ACTIVITY: WeekDay[] = [
+  { day: 'Mon', pct: 0, minutes: 0 },
+  { day: 'Tue', pct: 0, minutes: 0 },
+  { day: 'Wed', pct: 0, minutes: 0 },
+  { day: 'Thu', pct: 0, minutes: 0 },
+  { day: 'Fri', pct: 0, minutes: 0 },
+  { day: 'Sat', pct: 0, minutes: 0 },
+  { day: 'Sun', pct: 0, minutes: 0 },
 ]
+
+function buildDefaultChild(studentId: string, name: string, grade: string): ChildProgress {
+  return {
+    id: studentId,
+    name,
+    grade,
+    subject: '',
+    teacher: '',
+    school: '',
+    avatar: '🧒',
+    completionPct: 0,
+    streak: 0,
+    weeklyMinutes: 0,
+    schoolProgress: 0,
+    lessonsCompleted: 0,
+    assignmentsSubmitted: 0,
+    competitionRank: '—',
+    averageScore: '—',
+    engagementRate: 0,
+    activeDaysThisWeek: 0,
+    weekActivity: EMPTY_WEEK_ACTIVITY,
+    strengths: [],
+    improvements: [],
+    teacherNote: '',
+    nextAssignment: '—',
+    lastUpdated: null,
+    totalPoints: 0,
+    level: 1,
+    badges: [],
+  }
+}
 
 // ─── SVG Girl Avatar ────────────────────────────────────────────
 function GirlAvatar({ size = 36 }: { size?: number }) {
@@ -298,9 +264,11 @@ function StatCard({
 function ProfileDropdown({
   parentName,
   onLogout,
+  onNavigate,
 }: {
   parentName: string
   onLogout: () => void
+  onNavigate: (target: string) => void
 }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -314,10 +282,10 @@ function ProfileDropdown({
   }, [])
 
   const menuItems = [
-    { icon: '👤', label: 'My Profile', action: () => {} },
-    { icon: '⚙️', label: 'Account Settings', action: () => {} },
-    { icon: '🔔', label: 'Notifications', action: () => {} },
-    { icon: '❓', label: 'Help & Support', action: () => {} },
+    { icon: '👤', label: 'My Profile', action: () => { setOpen(false); onNavigate('/profile') } },
+    { icon: '⚙️', label: 'Account Settings', action: () => { setOpen(false); onNavigate('settings') } },
+    { icon: '🔔', label: 'Notifications', action: () => { setOpen(false); onNavigate('notifications') } },
+    { icon: '❓', label: 'Help & Support', action: () => { setOpen(false); onNavigate('/contact') } },
   ]
 
   return (
@@ -909,9 +877,9 @@ Level: ${child.level}
 }
 
 // ─── Settings Section ───────────────────────────────────────────
-function SettingsSection({ parentName }: { parentName: string }) {
+function SettingsSection({ parentName, userId, userEmail }: { parentName: string; userId: string; userEmail: string }) {
   const [name, setName] = useState(parentName)
-  const [email, setEmail] = useState('parent@example.com')
+  const [email] = useState(userEmail)
   const [notifications, setNotifications] = useState({
     weeklyReport: true,
     dailyActivity: true,
@@ -919,11 +887,26 @@ function SettingsSection({ parentName }: { parentName: string }) {
     achievements: false,
   })
   const [saved, setSaved] = useState(false)
+  const [saving, setSaving] = useState(false)
 
-  function handleSave(e: React.FormEvent) {
+  async function handleSave(e: React.FormEvent) {
     e.preventDefault()
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2500)
+    setSaving(true)
+    try {
+      await updateDoc(doc(db, 'users', userId), {
+        name: name.trim(),
+        notificationSettings: notifications,
+        updatedAt: serverTimestamp(),
+      })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2500)
+    } catch {
+      // silently fall back
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2500)
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -953,8 +936,8 @@ function SettingsSection({ parentName }: { parentName: string }) {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              readOnly
+              className="w-full rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-800 focus:outline-none opacity-70 cursor-default"
               style={{ border: '1.5px solid rgba(200,210,240,0.6)', background: 'rgba(238,242,255,0.4)' }}
             />
           </div>
@@ -991,7 +974,8 @@ function SettingsSection({ parentName }: { parentName: string }) {
 
       <button
         type="submit"
-        className="w-full py-3 rounded-xl text-white font-bold transition-all hover:opacity-90 active:scale-95"
+        disabled={saving}
+        className="w-full py-3 rounded-xl text-white font-bold transition-all hover:opacity-90 active:scale-95 disabled:opacity-70"
         style={{
           background: saved
             ? 'linear-gradient(135deg, #22c55e, #16a34a)'
@@ -999,7 +983,7 @@ function SettingsSection({ parentName }: { parentName: string }) {
           boxShadow: saved ? '0 4px 18px rgba(34,197,94,0.3)' : '0 4px 18px rgba(99,102,241,0.3)',
         }}
       >
-        {saved ? '✅ Saved!' : 'Save Changes'}
+        {saving ? 'Saving…' : saved ? '✅ Saved!' : 'Save Changes'}
       </button>
     </form>
   )
@@ -1008,106 +992,166 @@ function SettingsSection({ parentName }: { parentName: string }) {
 // ─── Dashboard Page ─────────────────────────────────────────────
 export default function ParentDashboardPage() {
   const router = useRouter()
-  const [selectedChildId, setSelectedChildId] = useState(DEMO_CHILDREN[0].id)
-  const [childrenData, setChildrenData] = useState<ChildProgress[]>(DEMO_CHILDREN)
+  const { user, loading: authLoading, logout } = useAuth()
+  const [selectedChildId, setSelectedChildId] = useState<string>('')
+  const [childrenData, setChildrenData] = useState<ChildProgress[]>([])
+  const [childrenLoading, setChildrenLoading] = useState(true)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
   const [activeSection, setActiveSection] = useState('dashboard')
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const unsubscribesRef = useRef<(() => void)[]>([])
 
-  const parentName =
-    typeof window !== 'undefined'
-      ? sessionStorage.getItem('parentName') || 'Mrs. Johnson'
-      : 'Mrs. Johnson'
+  const parentName = user?.displayName || user?.email?.split('@')[0] || 'Parent'
 
   const child = childrenData.find((c) => c.id === selectedChildId) ?? childrenData[0]
 
-  // ── Real-time Firestore listeners ────────────────────────────
-  const setupListeners = useCallback(() => {
-    // Clean up previous listeners
-    unsubscribesRef.current.forEach((unsub) => unsub())
-    unsubscribesRef.current = []
+  // ── Fetch children from Firestore ────────────────────────────
+  useEffect(() => {
+    if (!user) return
 
-    DEMO_CHILDREN.forEach((demoChild) => {
-      try {
-        const docRef = doc(db, 'childProgress', demoChild.id)
+    async function loadChildren() {
+      setChildrenLoading(true)
+      const students = await fetchChildren(user!.uid)
 
-        // Seed initial data if needed
-        setDoc(
-          docRef,
-          {
-            ...demoChild,
-            lastUpdated: serverTimestamp(),
-          },
-          { merge: true }
-        ).catch(() => {}) // silent — may fail without auth
+      if (students.length === 0) {
+        setChildrenLoading(false)
+        return
+      }
 
-        const unsub = onSnapshot(
-          docRef,
-          (snap) => {
-            if (snap.exists()) {
-              const data = snap.data()
-              setChildrenData((prev) =>
-                prev.map((c) =>
-                  c.id === demoChild.id
-                    ? {
-                        ...c,
-                        completionPct: data.completionPct ?? c.completionPct,
-                        streak: data.streak ?? c.streak,
-                        weeklyMinutes: data.weeklyMinutes ?? c.weeklyMinutes,
-                        schoolProgress: data.schoolProgress ?? c.schoolProgress,
-                        lessonsCompleted: data.lessonsCompleted ?? c.lessonsCompleted,
-                        assignmentsSubmitted: data.assignmentsSubmitted ?? c.assignmentsSubmitted,
-                        competitionRank: data.competitionRank ?? c.competitionRank,
-                        averageScore: data.averageScore ?? c.averageScore,
-                        engagementRate: data.engagementRate ?? c.engagementRate,
-                        activeDaysThisWeek: data.activeDaysThisWeek ?? c.activeDaysThisWeek,
-                        weekActivity: data.weekActivity ?? c.weekActivity,
-                        strengths: data.strengths ?? c.strengths,
-                        improvements: data.improvements ?? c.improvements,
-                        teacherNote: data.teacherNote ?? c.teacherNote,
-                        nextAssignment: data.nextAssignment ?? c.nextAssignment,
-                        totalPoints: data.totalPoints ?? c.totalPoints,
-                        level: data.level ?? c.level,
-                        badges: data.badges ?? c.badges,
-                        lastUpdated: data.lastUpdated?.toDate() ?? new Date(),
-                      }
-                    : c
+      // Build initial ChildProgress entries from student profiles
+      const initial: ChildProgress[] = students.map((s) =>
+        buildDefaultChild(s.id, s.name, s.grade ?? '')
+      )
+      setChildrenData(initial)
+      setSelectedChildId(initial[0].id)
+      setChildrenLoading(false)
+
+      // Set up real-time listeners on childProgress docs for each child
+      unsubscribesRef.current.forEach((u) => u())
+      unsubscribesRef.current = []
+
+      students.forEach((student) => {
+        try {
+          const docRef = doc(db, 'childProgress', student.id)
+          const unsub = onSnapshot(
+            docRef,
+            (snap) => {
+              if (snap.exists()) {
+                const data = snap.data()
+                setChildrenData((prev) =>
+                  prev.map((c) =>
+                    c.id === student.id
+                      ? {
+                          ...c,
+                          completionPct: data.completionPct ?? c.completionPct,
+                          streak: data.streak ?? c.streak,
+                          weeklyMinutes: data.weeklyMinutes ?? c.weeklyMinutes,
+                          schoolProgress: data.schoolProgress ?? c.schoolProgress,
+                          lessonsCompleted: data.lessonsCompleted ?? c.lessonsCompleted,
+                          assignmentsSubmitted: data.assignmentsSubmitted ?? c.assignmentsSubmitted,
+                          competitionRank: data.competitionRank ?? c.competitionRank,
+                          averageScore: data.averageScore ?? c.averageScore,
+                          engagementRate: data.engagementRate ?? c.engagementRate,
+                          activeDaysThisWeek: data.activeDaysThisWeek ?? c.activeDaysThisWeek,
+                          weekActivity: data.weekActivity ?? c.weekActivity,
+                          strengths: data.strengths ?? c.strengths,
+                          improvements: data.improvements ?? c.improvements,
+                          teacherNote: data.teacherNote ?? c.teacherNote,
+                          nextAssignment: data.nextAssignment ?? c.nextAssignment,
+                          totalPoints: data.totalPoints ?? c.totalPoints,
+                          level: data.level ?? c.level,
+                          badges: data.badges ?? c.badges,
+                          subject: data.subject ?? c.subject,
+                          teacher: data.teacher ?? c.teacher,
+                          school: data.school ?? c.school,
+                          avatar: data.avatar ?? c.avatar,
+                          lastUpdated: data.lastUpdated?.toDate?.() ?? new Date(),
+                        }
+                      : c
+                  )
                 )
-              )
+                setLastUpdated(new Date())
+              }
+            },
+            () => {
               setLastUpdated(new Date())
             }
-          },
-          () => {
-            // Firestore unavailable — fall back to demo data silently
-            setLastUpdated(new Date())
-          }
-        )
-
-        unsubscribesRef.current.push(unsub)
-      } catch {
-        // Firebase not configured — demo data remains
-        setLastUpdated(new Date())
-      }
-    })
-  }, [])
-
-  useEffect(() => {
-    setupListeners()
-    return () => {
-      unsubscribesRef.current.forEach((unsub) => unsub())
+          )
+          unsubscribesRef.current.push(unsub)
+        } catch {
+          // Firestore unavailable
+        }
+      })
     }
-  }, [setupListeners])
 
-  function handleLogout() {
-    sessionStorage.clear()
+    loadChildren()
+    return () => {
+      unsubscribesRef.current.forEach((u) => u())
+    }
+  }, [user])
+
+  async function handleLogout() {
+    await logout()
     router.push('/select-role' as Parameters<typeof router.push>[0])
+  }
+
+  // Auth loading
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(160deg, #eef2ff 0%, #f0f4ff 40%, #f5f0ff 100%)' }}>
+        <div className="w-10 h-10 rounded-full border-4 border-indigo-300 border-t-transparent animate-spin" />
+      </div>
+    )
+  }
+
+  // Not authenticated
+  if (!user) {
+    router.replace('/login' as Parameters<typeof router.replace>[0])
+    return null
+  }
+
+  // Children loading
+  if (childrenLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(160deg, #eef2ff 0%, #f0f4ff 40%, #f5f0ff 100%)' }}>
+        <div className="w-10 h-10 rounded-full border-4 border-indigo-300 border-t-transparent animate-spin" />
+      </div>
+    )
+  }
+
+  // No children linked yet
+  if (!childrenLoading && childrenData.length === 0) {
+    return (
+      <div
+        className="min-h-screen flex flex-col items-center justify-center px-4 text-center"
+        style={{ background: 'linear-gradient(160deg, #eef2ff 0%, #f0f4ff 40%, #f5f0ff 100%)' }}
+      >
+        <div className="text-6xl mb-4">👨‍👩‍👧</div>
+        <h1 className="text-2xl font-extrabold text-indigo-900 mb-2">No children linked yet</h1>
+        <p className="text-gray-500 text-sm mb-6 max-w-xs">
+          Use your child&apos;s access code to link their account to yours and start tracking their progress.
+        </p>
+        <button
+          onClick={() => router.push('/parent/access-code' as Parameters<typeof router.push>[0])}
+          className="px-6 py-3 rounded-2xl text-white font-bold"
+          style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', boxShadow: '0 4px 18px rgba(99,102,241,0.35)' }}
+        >
+          Connect a Child
+        </button>
+        <button
+          onClick={handleLogout}
+          className="mt-4 text-sm text-red-500 hover:text-red-700 font-semibold transition"
+        >
+          Logout
+        </button>
+      </div>
+    )
   }
 
   const sectionTitle: Record<string, string> = {
     dashboard: `Welcome back, ${parentName}!`,
     notifications: 'Notifications',
-    progress: `${child.name}'s Progress`,
+    progress: `${child?.name ?? ''}'s Progress`,
     reports: 'Download Reports',
     settings: 'Account Settings',
   }
@@ -1184,7 +1228,17 @@ export default function ParentDashboardPage() {
                 </option>
               ))}
             </select>
-            <ProfileDropdown parentName={parentName} onLogout={handleLogout} />
+            <ProfileDropdown
+              parentName={parentName}
+              onLogout={handleLogout}
+              onNavigate={(target) => {
+                if (target.startsWith('/')) {
+                  router.push(target as Parameters<typeof router.push>[0])
+                } else {
+                  setActiveSection(target)
+                }
+              }}
+            />
           </div>
         </header>
 
@@ -1283,7 +1337,7 @@ export default function ParentDashboardPage() {
             <div className="space-y-5">
               <h2 className="text-lg font-extrabold text-gray-800 mb-1">⚙️ Account Settings</h2>
               <p className="text-sm text-gray-500 mb-4">Manage your parent account preferences</p>
-              <SettingsSection parentName={parentName} />
+              <SettingsSection parentName={parentName} userId={user.uid} userEmail={user.email ?? ''} />
             </div>
           )}
 

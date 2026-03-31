@@ -218,7 +218,6 @@ export default function SelectRolePage() {
                     </svg>
                   </div>
                 )}
-                <span className="text-sm font-bold mb-2" style={{ color: isSelected ? '#166534' : '#6366f1' }}>{role.label}</span>
                 <div className="w-24 h-24 rounded-xl overflow-hidden mb-2">{ILLUSTRATIONS[role.id]}</div>
                 <span className="text-sm font-bold text-gray-700">{role.label}</span>
               </button>

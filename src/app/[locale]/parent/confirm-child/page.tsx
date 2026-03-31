@@ -1,8 +1,10 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import { Suspense } from 'react'
+import { Suspense, useState } from 'react'
 import { useRouter } from '@/i18n/navigation'
+import { useAuth } from '@/context/AuthContext'
+import { linkChildToParent } from '@/lib/firestoreHelpers'
 
 function KinderCodeLogo() {
   return (
@@ -17,15 +19,39 @@ function KinderCodeLogo() {
 function ConfirmChildContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { user } = useAuth()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  const childName = searchParams.get('childName') || 'Daniel Johnson'
-  const grade = searchParams.get('grade') || 'Grade 5 – Coding Basics'
-  const teacher = searchParams.get('teacher') || 'Ms. Sarah'
-  const school = searchParams.get('school') || 'Green Valley School'
+  const studentId = searchParams.get('studentId') || ''
+  const childName = searchParams.get('childName') || 'Your Child'
+  const grade = searchParams.get('grade') || ''
+  const teacher = searchParams.get('teacher') || ''
+  const school = searchParams.get('school') || ''
 
-  function handleConfirm() {
-    const params = new URLSearchParams({ childName, grade, teacher, school })
-    router.push(`/parent/signup?${params.toString()}` as Parameters<typeof router.push>[0])
+  async function handleConfirm() {
+    if (!user) {
+      // Not signed in — go to signup first
+      const params = new URLSearchParams({ studentId, childName, grade, teacher, school })
+      router.push(`/parent/signup?${params.toString()}` as Parameters<typeof router.push>[0])
+      return
+    }
+
+    if (!studentId) {
+      setError('Student ID is missing. Please go back and try again.')
+      return
+    }
+
+    setLoading(true)
+    setError('')
+    try {
+      await linkChildToParent(user.uid, studentId)
+      router.push('/parent/dashboard' as Parameters<typeof router.push>[0])
+    } catch {
+      setError('Failed to link child. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -96,16 +122,39 @@ function ConfirmChildContent() {
           </div>
         </div>
 
+        {/* Error */}
+        {error && (
+          <div
+            className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold mb-4"
+            style={{ background: 'rgba(255,220,220,0.75)', color: '#c0392b' }}
+          >
+            <span className="text-base">🚫</span>
+            {error}
+          </div>
+        )}
+
         {/* Confirm Button */}
         <button
           onClick={handleConfirm}
+          disabled={loading}
           className="w-full py-4 rounded-2xl text-white text-lg font-bold transition-all duration-200 flex items-center justify-center gap-2 mb-4"
           style={{
             background: 'linear-gradient(135deg, #5b8dee 0%, #4a7de0 50%, #3a6dd0 100%)',
             boxShadow: '0 6px 24px rgba(74,125,224,0.45)',
+            opacity: loading ? 0.8 : 1,
           }}
         >
-          Confirm &amp; Create Account &nbsp;›
+          {loading ? (
+            <>
+              <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)" strokeWidth="3" />
+                <path d="M12 2a10 10 0 0 1 10 10" stroke="white" strokeWidth="3" strokeLinecap="round" />
+              </svg>
+              Linking…
+            </>
+          ) : (
+            <>Confirm &amp; Connect &nbsp;›</>
+          )}
         </button>
 
         {/* Back link */}
