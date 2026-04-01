@@ -54,13 +54,29 @@ const navItems = [
 ]
 
 /* ──────────────────────────────────────────────
-   Skill progress data
+   Skill progress — base config (pct overridden by localStorage)
 ────────────────────────────────────────────── */
-const skillData = [
-  { label: 'Problem Solving', pct: 75, color: '#4A90E2', gradFrom: '#4A90E2', gradTo: '#2575fc' },
-  { label: 'Game Development', pct: 60, color: '#FF8C42', gradFrom: '#FF8C42', gradTo: '#FF6B6B' },
-  { label: 'Programming', pct: 45, color: '#9B59B6', gradFrom: '#9B59B6', gradTo: '#6C3483' },
+const SKILL_CONFIG = [
+  { gameId: 'problem-solver', label: 'Problem Solving', gradFrom: '#4A90E2', gradTo: '#2575fc' },
+  { gameId: 'game-builder',   label: 'Game Building',   gradFrom: '#FF8C42', gradTo: '#FF6B6B' },
+  { gameId: 'ai-explorer',    label: 'AI Thinking',     gradFrom: '#9B59B6', gradTo: '#6C3483' },
+  { gameId: 'web-creator',    label: 'Web Design',      gradFrom: '#11998e', gradTo: '#38ef7d' },
+  { gameId: 'robot-thinker',  label: 'Robotics',        gradFrom: '#f953c6', gradTo: '#b91d73' },
 ]
+
+function loadSkillData() {
+  if (typeof window === 'undefined') return SKILL_CONFIG.map((s) => ({ ...s, pct: 0 }))
+  try {
+    const raw = localStorage.getItem('kindercode_game_progress')
+    const progress = raw ? JSON.parse(raw) : {}
+    return SKILL_CONFIG.map((s) => ({
+      ...s,
+      pct: progress[s.gameId]?.pct ?? 0,
+    }))
+  } catch {
+    return SKILL_CONFIG.map((s) => ({ ...s, pct: 0 }))
+  }
+}
 
 /* ──────────────────────────────────────────────
    Learning path tabs
@@ -80,12 +96,21 @@ export default function HomePage() {
   const router = useRouter()
   const [liked, setLiked] = useState(false)
   const [likeCount, setLikeCount] = useState(24)
+  const [skillData, setSkillData] = useState(() => loadSkillData())
 
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login')
     }
   }, [user, loading, router])
+
+  // Refresh skill progress whenever the home page becomes visible
+  useEffect(() => {
+    const refresh = () => setSkillData(loadSkillData())
+    refresh()
+    window.addEventListener('focus', refresh)
+    return () => window.removeEventListener('focus', refresh)
+  }, [])
 
   if (loading || !user) {
     return (

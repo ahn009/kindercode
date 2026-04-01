@@ -85,7 +85,7 @@ function SignupContent() {
         language: formData.language,
       })
       const role = sessionStorage.getItem('selectedRole')
-      router.push(role ? '/onboarding' : '/home')
+      router.push(role ? '/onboarding' : '/choose-skill-path')
     } catch (err: unknown) {
       setError(getFirebaseError(err))
     } finally {
@@ -99,7 +99,7 @@ function SignupContent() {
     try {
       await googleLogin()
       const role = sessionStorage.getItem('selectedRole')
-      router.push(role ? '/onboarding' : '/home')
+      router.push(role ? '/onboarding' : '/choose-skill-path')
     } catch (err: unknown) {
       setError(getFirebaseError(err))
     } finally {

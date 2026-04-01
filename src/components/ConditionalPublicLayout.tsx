@@ -11,6 +11,7 @@ const APP_PREFIXES = [
   '/parent/dashboard',
   '/school-admin-dashboard',
   '/home',
+  '/games',
 ]
 
 export default function ConditionalPublicLayout({
