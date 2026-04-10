@@ -40,7 +40,10 @@ next-env.d.ts
 *.swp
 *.swo
 .claude
+.claude-flow
+.mcp.json
 
 # Docs / AI attribution files
 *.DOCX
 *.MD
+CLAUDE.md
