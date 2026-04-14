@@ -1,20 +1,93 @@
 'use client'
 
 import { useState } from 'react'
-import { Code2, Smartphone, Gamepad2, Cpu, ChevronLeft, Map } from 'lucide-react'
+import { ChevronLeft, Map } from 'lucide-react'
 import { useRouter } from '@/i18n/navigation'
+
+// ── Tech logo SVGs ─────────────────────────────────────────────────────────
+function Html5Logo() {
+  return (
+    <svg viewBox="0 0 48 54" width="44" height="44" aria-hidden>
+      <path d="M4 2h40L40.5 44 24 49 7.5 44Z" fill="#E44D26"/>
+      <path d="M24 5.5v39.8l13.2-3.7L40 5.5Z" fill="#F16529"/>
+      <path fill="white" d="M13 15h11v5.2H13zm.5 8h16.3l-.6 6.2-5.2 1.5-5.2-1.5-.4-4H13l.8 10 10.2 2.8 10.2-2.8 1.4-15.2H13.5z"/>
+      <path fill="#EBEBEB" d="M24 15v5.2h10.8l-.4 4.5L24 26.2v5.2l9.5-2.6 1.3-13.8z"/>
+    </svg>
+  )
+}
+
+function ReactLogo() {
+  return (
+    <svg viewBox="0 0 48 48" width="44" height="44" aria-hidden>
+      <circle cx="24" cy="24" r="5" fill="#61DAFB"/>
+      <ellipse cx="24" cy="24" rx="21" ry="8.5" fill="none" stroke="#61DAFB" strokeWidth="2.2"/>
+      <ellipse cx="24" cy="24" rx="21" ry="8.5" fill="none" stroke="#61DAFB" strokeWidth="2.2" transform="rotate(60 24 24)"/>
+      <ellipse cx="24" cy="24" rx="21" ry="8.5" fill="none" stroke="#61DAFB" strokeWidth="2.2" transform="rotate(120 24 24)"/>
+    </svg>
+  )
+}
+
+function GamepadLogo() {
+  return (
+    <svg viewBox="0 0 56 40" width="50" height="36" aria-hidden>
+      <rect x="4" y="6" width="48" height="28" rx="14" fill="#7C3AED"/>
+      <rect x="4" y="6" width="48" height="28" rx="14" fill="url(#gpad)" opacity="0.9"/>
+      <defs>
+        <linearGradient id="gpad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#8B5CF6"/>
+          <stop offset="100%" stopColor="#4F46E5"/>
+        </linearGradient>
+      </defs>
+      {/* D-pad */}
+      <rect x="14" y="16" width="4" height="12" rx="1" fill="white" opacity="0.9"/>
+      <rect x="11" y="19" width="10" height="4" rx="1" fill="white" opacity="0.9"/>
+      {/* Buttons */}
+      <circle cx="38" cy="17" r="3" fill="#EC4899"/>
+      <circle cx="44" cy="22" r="3" fill="#10B981"/>
+      <circle cx="38" cy="27" r="3" fill="#F59E0B"/>
+      <circle cx="32" cy="22" r="3" fill="#6366F1"/>
+      {/* Analog sticks */}
+      <circle cx="20" cy="30" r="4" fill="rgba(255,255,255,0.25)" stroke="white" strokeWidth="1.5"/>
+      <circle cx="34" cy="30" r="4" fill="rgba(255,255,255,0.25)" stroke="white" strokeWidth="1.5"/>
+    </svg>
+  )
+}
+
+function BrainLogo() {
+  return (
+    <svg viewBox="0 0 48 48" width="44" height="44" aria-hidden>
+      {/* Neural network */}
+      <circle cx="8"  cy="14" r="4.5" fill="#FCD34D"/>
+      <circle cx="8"  cy="34" r="4.5" fill="#FCD34D"/>
+      <circle cx="24" cy="8"  r="4.5" fill="#FBBF24"/>
+      <circle cx="24" cy="24" r="4.5" fill="#FBBF24"/>
+      <circle cx="24" cy="40" r="4.5" fill="#FBBF24"/>
+      <circle cx="40" cy="18" r="4.5" fill="#F59E0B"/>
+      <circle cx="40" cy="30" r="4.5" fill="#F59E0B"/>
+      {/* Connections */}
+      <line x1="12" y1="14" x2="19.5" y2="9"  stroke="#FDE68A" strokeWidth="1.8" strokeOpacity="0.7"/>
+      <line x1="12" y1="14" x2="19.5" y2="24" stroke="#FDE68A" strokeWidth="1.8" strokeOpacity="0.7"/>
+      <line x1="12" y1="34" x2="19.5" y2="24" stroke="#FDE68A" strokeWidth="1.8" strokeOpacity="0.7"/>
+      <line x1="12" y1="34" x2="19.5" y2="40" stroke="#FDE68A" strokeWidth="1.8" strokeOpacity="0.7"/>
+      <line x1="28.5" y1="9"  x2="35.5" y2="18" stroke="#FDE68A" strokeWidth="1.8" strokeOpacity="0.7"/>
+      <line x1="28.5" y1="24" x2="35.5" y2="18" stroke="#FDE68A" strokeWidth="1.8" strokeOpacity="0.7"/>
+      <line x1="28.5" y1="24" x2="35.5" y2="30" stroke="#FDE68A" strokeWidth="1.8" strokeOpacity="0.7"/>
+      <line x1="28.5" y1="40" x2="35.5" y2="30" stroke="#FDE68A" strokeWidth="1.8" strokeOpacity="0.7"/>
+    </svg>
+  )
+}
 
 type TechId = 'web' | 'app' | 'game' | 'ai'
 
 // ── STEP 1 ─────────────────────────────────────────────────────────────────
 const TECHNOLOGIES: {
-  id: TechId; emoji: string; title: string; desc: string
-  gradient: string; glow: string; icon: typeof Code2
+  id: TechId; title: string; desc: string
+  gradient: string; glow: string; Logo: () => JSX.Element
 }[] = [
-  { id: 'web',  emoji: '🌐', title: 'Web Dev',  desc: 'Build awesome websites!',    gradient: 'linear-gradient(135deg,#6366f1 0%,#a855f7 100%)', glow: 'rgba(99,102,241,0.55)',   icon: Code2 },
-  { id: 'app',  emoji: '📱', title: 'App Dev',  desc: 'Create mobile apps!',        gradient: 'linear-gradient(135deg,#ec4899 0%,#f97316 100%)', glow: 'rgba(236,72,153,0.55)',   icon: Smartphone },
-  { id: 'game', emoji: '🎮', title: 'Game Dev', desc: 'Build your own games!',      gradient: 'linear-gradient(135deg,#10b981 0%,#06b6d4 100%)', glow: 'rgba(16,185,129,0.55)',  icon: Gamepad2 },
-  { id: 'ai',   emoji: '🤖', title: 'AI & ML',  desc: 'Make smart programs!',       gradient: 'linear-gradient(135deg,#f59e0b 0%,#ef4444 100%)', glow: 'rgba(245,158,11,0.55)',  icon: Cpu },
+  { id: 'web',  title: 'Web Dev',  desc: 'Build awesome websites!',  gradient: 'linear-gradient(135deg,#6366f1 0%,#a855f7 100%)', glow: 'rgba(99,102,241,0.55)',  Logo: Html5Logo },
+  { id: 'app',  title: 'App Dev',  desc: 'Create mobile apps!',      gradient: 'linear-gradient(135deg,#ec4899 0%,#f97316 100%)', glow: 'rgba(236,72,153,0.55)',  Logo: ReactLogo },
+  { id: 'game', title: 'Game Dev', desc: 'Build your own games!',    gradient: 'linear-gradient(135deg,#10b981 0%,#06b6d4 100%)', glow: 'rgba(16,185,129,0.55)', Logo: GamepadLogo },
+  { id: 'ai',   title: 'AI & ML',  desc: 'Make smart programs!',     gradient: 'linear-gradient(135deg,#f59e0b 0%,#ef4444 100%)', glow: 'rgba(245,158,11,0.55)',  Logo: BrainLogo },
 ]
 
 // ── STEP 2 ─────────────────────────────────────────────────────────────────
@@ -252,24 +325,29 @@ export default function ChooseSkillPathPage() {
               <p className="text-white/50 text-base">Pick what you want to create today!</p>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-              {TECHNOLOGIES.map((t) => (
-                <button
-                  key={t.id}
-                  onClick={() => pickTech(t.id)}
-                  className="rounded-3xl p-6 text-center group transition-all duration-300 hover:scale-105 active:scale-95 flex flex-col items-center"
-                  style={{ background: t.gradient, boxShadow:`0 8px 32px ${t.glow}` }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = `0 18px 56px ${t.glow}` }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 32px ${t.glow}` }}
-                >
-                  <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">{t.emoji}</div>
-                  <p className="text-white font-extrabold text-base mb-1">{t.title}</p>
-                  <p className="text-white/70 text-xs mb-5 leading-snug">{t.desc}</p>
-                  <div className="bg-white/20 hover:bg-white/30 rounded-xl px-4 py-1.5 text-white text-xs font-bold transition-colors">
-                    Let&apos;s Go! →
-                  </div>
-                </button>
-              ))}
+            <div className="flex flex-wrap justify-center gap-5">
+              {TECHNOLOGIES.map((t) => {
+                const Logo = t.Logo
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => pickTech(t.id)}
+                    className="w-48 rounded-3xl p-6 text-center group transition-all duration-300 hover:scale-105 active:scale-95 flex flex-col items-center"
+                    style={{ background: t.gradient, boxShadow:`0 8px 32px ${t.glow}` }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = `0 18px 56px ${t.glow}` }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 32px ${t.glow}` }}
+                  >
+                    <div className="mb-4 group-hover:scale-110 transition-transform duration-300 drop-shadow-lg">
+                      <Logo />
+                    </div>
+                    <p className="text-white font-extrabold text-base mb-1">{t.title}</p>
+                    <p className="text-white/70 text-xs mb-5 leading-snug">{t.desc}</p>
+                    <div className="bg-white/20 hover:bg-white/30 rounded-xl px-4 py-1.5 text-white text-xs font-bold transition-colors">
+                      Let&apos;s Go! →
+                    </div>
+                  </button>
+                )
+              })}
             </div>
 
             <div className="flex justify-center mt-12">
@@ -289,7 +367,7 @@ export default function ChooseSkillPathPage() {
           <>
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 px-4 py-1.5 rounded-full text-white/60 text-xs font-semibold mb-4">
-                <span className="text-lg">{techData?.emoji}</span> {techData?.title}
+                {techData?.title}
               </div>
               <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2">
                 What do you want to{' '}
@@ -401,7 +479,7 @@ export default function ChooseSkillPathPage() {
               </h2>
               {topic && (
                 <p className="text-white/40 text-sm">
-                  {techData?.emoji} {techData?.title} · {topic.label} ·{' '}
+                  {techData?.title} · {topic.label} ·{' '}
                   <span className="text-purple-400">{LANGUAGES[topic.key]?.find((l) => l.key === lang)?.label ?? lang}</span>
                 </p>
               )}
