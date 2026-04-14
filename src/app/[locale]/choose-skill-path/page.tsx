@@ -378,14 +378,14 @@ export default function ChooseSkillPathPage() {
               <p className="text-white/40 text-sm">Pick one topic to start your journey! 🗺️</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="flex flex-wrap justify-center gap-4">
               {TOPICS[tech].map((t, i) => {
                 const c = CHIP_COLORS[i % CHIP_COLORS.length]
                 return (
                   <button
                     key={t.key}
                     onClick={() => pickTopic(t)}
-                    className="p-6 rounded-2xl text-left transition-all duration-200 group hover:scale-105 active:scale-95"
+                    className="w-56 p-6 rounded-2xl text-left transition-all duration-200 group hover:scale-105 active:scale-95"
                     style={{ background: c.bg, border:`1.5px solid ${c.border}` }}
                   >
                     <p className="font-extrabold text-base mb-1.5" style={{ color: c.text }}>{t.label}</p>
@@ -402,7 +402,7 @@ export default function ChooseSkillPathPage() {
 
         {/* ── STEP 3 ── */}
         {step === 3 && topic && (
-          <div className="space-y-8">
+          <div className="space-y-8 max-w-2xl mx-auto">
             <div className="text-center">
               <h2 className="text-3xl font-extrabold text-white mb-2">
                 Pick Your{' '}
@@ -485,9 +485,13 @@ export default function ChooseSkillPathPage() {
               )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="flex flex-wrap justify-center gap-5">
               {LEARNING_METHODS.map((m) => (
-                <div key={m.key} className="rounded-3xl overflow-hidden flex flex-col" style={{ background: m.gradient, boxShadow:`0 8px 32px ${m.glow}` }}>
+                <div
+                  key={m.key}
+                  className="w-56 rounded-3xl overflow-hidden flex flex-col"
+                  style={{ background: m.gradient, boxShadow:`0 8px 32px ${m.glow}` }}
+                >
                   <div className="p-6 flex flex-col flex-1">
                     <div className="text-4xl mb-4">{m.emoji}</div>
                     <p className="font-extrabold text-white text-base mb-2">{m.title}</p>
