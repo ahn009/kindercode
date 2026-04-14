@@ -1,209 +1,460 @@
 'use client'
 
-import Image from 'next/image'
+import { useState } from 'react'
+import { Code2, Smartphone, Gamepad2, Cpu, ChevronLeft, Map } from 'lucide-react'
 import { useRouter } from '@/i18n/navigation'
 
-/* ── All skill path data — no hardcoded values in JSX ── */
-const SKILL_PATHS = [
-  {
-    id: 'problem-solver',
-    image: '/images/problem-solving.png',
-    cardStyle: { background: 'linear-gradient(145deg, #1a1a5e 0%, #2d2d8f 100%)' },
-    btnStyle: { background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
-    glowColor: 'rgba(79, 172, 254, 0.55)',
-    gamePath: '/games/problem-solver',
-  },
-  {
-    id: 'game-builder',
-    image: '/images/game-logic.png',
-    cardStyle: { background: 'linear-gradient(145deg, #1a0a2e 0%, #44107a 100%)' },
-    btnStyle: { background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-    glowColor: 'rgba(245, 87, 108, 0.55)',
-    gamePath: '/games/game-builder',
-  },
-  {
-    id: 'ai-explorer',
-    image: '/images/ai-thinking.png',
-    cardStyle: { background: 'linear-gradient(145deg, #0d1b2a 0%, #1b3a6b 100%)' },
-    btnStyle: { background: 'linear-gradient(135deg, #a78bfa 0%, #818cf8 100%)' },
-    glowColor: 'rgba(167, 139, 250, 0.55)',
-    gamePath: '/games/ai-explorer',
-  },
-  {
-    id: 'web-creator',
-    image: '/images/web-thinking.png',
-    cardStyle: { background: 'linear-gradient(145deg, #052e16 0%, #064e3b 100%)' },
-    btnStyle: { background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)' },
-    glowColor: 'rgba(17, 153, 142, 0.55)',
-    gamePath: '/games/web-creator',
-  },
-  {
-    id: 'robot-thinker',
-    image: '/images/robotics-logic.png',
-    cardStyle: { background: 'linear-gradient(145deg, #1a0a0a 0%, #7f1d1d 100%)' },
-    btnStyle: { background: 'linear-gradient(135deg, #f953c6 0%, #b91d73 100%)' },
-    glowColor: 'rgba(249, 83, 198, 0.55)',
-    gamePath: '/games/robot-thinker',
-  },
-] as const
+type TechId = 'web' | 'app' | 'game' | 'ai'
 
-type SkillPath = (typeof SKILL_PATHS)[number]
+// ── STEP 1 ─────────────────────────────────────────────────────────────────
+const TECHNOLOGIES: {
+  id: TechId; emoji: string; title: string; desc: string
+  gradient: string; glow: string; icon: typeof Code2
+}[] = [
+  { id: 'web',  emoji: '🌐', title: 'Web Dev',  desc: 'Build awesome websites!',    gradient: 'linear-gradient(135deg,#6366f1 0%,#a855f7 100%)', glow: 'rgba(99,102,241,0.55)',   icon: Code2 },
+  { id: 'app',  emoji: '📱', title: 'App Dev',  desc: 'Create mobile apps!',        gradient: 'linear-gradient(135deg,#ec4899 0%,#f97316 100%)', glow: 'rgba(236,72,153,0.55)',   icon: Smartphone },
+  { id: 'game', emoji: '🎮', title: 'Game Dev', desc: 'Build your own games!',      gradient: 'linear-gradient(135deg,#10b981 0%,#06b6d4 100%)', glow: 'rgba(16,185,129,0.55)',  icon: Gamepad2 },
+  { id: 'ai',   emoji: '🤖', title: 'AI & ML',  desc: 'Make smart programs!',       gradient: 'linear-gradient(135deg,#f59e0b 0%,#ef4444 100%)', glow: 'rgba(245,158,11,0.55)',  icon: Cpu },
+]
 
-/* ── Single card component ── */
-function SkillCard({ path, onStart }: { path: SkillPath; onStart: () => void }) {
+// ── STEP 2 ─────────────────────────────────────────────────────────────────
+const CHIP_COLORS = [
+  { bg: 'rgba(99,102,241,0.18)',  border: 'rgba(99,102,241,0.45)',  text: '#a5b4fc' },
+  { bg: 'rgba(236,72,153,0.18)', border: 'rgba(236,72,153,0.45)', text: '#f9a8d4' },
+  { bg: 'rgba(16,185,129,0.18)', border: 'rgba(16,185,129,0.45)', text: '#6ee7b7' },
+  { bg: 'rgba(245,158,11,0.18)', border: 'rgba(245,158,11,0.45)', text: '#fde68a' },
+  { bg: 'rgba(139,92,246,0.18)', border: 'rgba(139,92,246,0.45)', text: '#c4b5fd' },
+]
+
+type Topic = { key: string; label: string; desc: string }
+
+const TOPICS: Record<TechId, Topic[]> = {
+  web: [
+    { key: 'html-css',   label: 'HTML & CSS',   desc: 'Structure & style the web' },
+    { key: 'javascript', label: 'JavaScript',    desc: 'Make the web interactive' },
+    { key: 'react',      label: 'React',         desc: 'Build modern UI components' },
+    { key: 'backend',    label: 'Backend',       desc: 'Servers, APIs & databases' },
+    { key: 'fullstack',  label: 'Full Stack',    desc: 'End-to-end web development' },
+  ],
+  app: [
+    { key: 'ios',          label: 'iOS Development',     desc: 'Build apps for iPhone & iPad' },
+    { key: 'android',      label: 'Android Development', desc: 'Build apps for Android' },
+    { key: 'react-native', label: 'React Native',        desc: 'Cross-platform mobile apps' },
+    { key: 'flutter',      label: 'Flutter',             desc: 'Beautiful multi-platform apps' },
+  ],
+  game: [
+    { key: 'unity',     label: 'Unity',      desc: '2D & 3D game development' },
+    { key: 'godot',     label: 'Godot',      desc: 'Open-source game engine' },
+    { key: 'pygame',    label: 'Pygame',     desc: 'Build games with Python' },
+    { key: 'web-games', label: 'Web Games',  desc: 'Browser-based game dev' },
+  ],
+  ai: [
+    { key: 'python-basics',    label: 'Python Fundamentals', desc: 'The language of AI' },
+    { key: 'ml-basics',        label: 'Machine Learning',    desc: 'Teach machines to learn' },
+    { key: 'deep-learning',    label: 'Deep Learning',       desc: 'Neural networks & AI' },
+    { key: 'computer-vision',  label: 'Computer Vision',     desc: 'Teach AI to see' },
+  ],
+}
+
+// ── STEP 3 ─────────────────────────────────────────────────────────────────
+type Lang = { key: string; label: string; icon: string }
+type RoadmapItem = { emoji: string; label: string; desc: string }
+
+const LANGUAGES: Record<string, Lang[]> = {
+  'html-css':       [{ key: 'html5',   label: 'HTML5 + CSS3',        icon: '🏗️' }],
+  javascript:       [{ key: 'js',      label: 'JavaScript',          icon: '🟡' }, { key: 'ts', label: 'TypeScript', icon: '🔷' }],
+  react:            [{ key: 'rjs',     label: 'React + JavaScript',  icon: '⚛️' }, { key: 'rts', label: 'React + TypeScript', icon: '⚛️' }],
+  backend:          [{ key: 'node',    label: 'Node.js',             icon: '🟢' }, { key: 'dj', label: 'Python / Django', icon: '🐍' }, { key: 'fa', label: 'FastAPI', icon: '🐍' }],
+  fullstack:        [{ key: 'mern',    label: 'MERN Stack',          icon: '⚡' }, { key: 'next', label: 'Next.js', icon: '▲' }],
+  ios:              [{ key: 'swift',   label: 'Swift',               icon: '🍎' }],
+  android:          [{ key: 'kotlin',  label: 'Kotlin',              icon: '🟣' }, { key: 'java', label: 'Java', icon: '☕' }],
+  'react-native':   [{ key: 'rnjs',    label: 'JavaScript',          icon: '🟡' }, { key: 'rnts', label: 'TypeScript', icon: '🔷' }],
+  flutter:          [{ key: 'dart',    label: 'Dart',                icon: '🎯' }],
+  unity:            [{ key: 'cs',      label: 'C#',                  icon: '💜' }],
+  godot:            [{ key: 'gds',     label: 'GDScript',            icon: '🕹️' }, { key: 'csg', label: 'C#', icon: '💜' }],
+  pygame:           [{ key: 'py',      label: 'Python',              icon: '🐍' }],
+  'web-games':      [{ key: 'jsw',     label: 'JavaScript',          icon: '🟡' }, { key: 'tsw', label: 'TypeScript', icon: '🔷' }],
+  'python-basics':  [{ key: 'py3',     label: 'Python 3',            icon: '🐍' }],
+  'ml-basics':      [{ key: 'skl',     label: 'Python + scikit-learn', icon: '🧠' }],
+  'deep-learning':  [{ key: 'pt',      label: 'Python + PyTorch',    icon: '🔥' }, { key: 'tf', label: 'TensorFlow', icon: '🧡' }],
+  'computer-vision':[{ key: 'cv',      label: 'Python + OpenCV',     icon: '👁️' }],
+}
+
+const ROADMAPS: Record<string, RoadmapItem[]> = {
+  'html-css': [
+    { emoji:'🏗️', label:'HTML Structure',   desc:'Tags, elements, semantic HTML' },
+    { emoji:'🎨', label:'CSS Styling',       desc:'Colors, fonts, the box model' },
+    { emoji:'📐', label:'Layouts',           desc:'Flexbox, Grid, positioning' },
+    { emoji:'📱', label:'Responsive Design', desc:'Works on any screen size!' },
+    { emoji:'✨', label:'Animations',        desc:'Transitions & keyframes' },
+    { emoji:'🚀', label:'Build a Website!',  desc:'Your very first project' },
+  ],
+  javascript: [
+    { emoji:'📦', label:'JS Fundamentals',   desc:'Variables, loops, functions' },
+    { emoji:'🖱️', label:'DOM & Events',      desc:'Click buttons, update pages' },
+    { emoji:'⏳', label:'Async JavaScript',  desc:'Promises and fetch API' },
+    { emoji:'✨', label:'ES6+ Features',     desc:'Modern JS syntax' },
+    { emoji:'🏛️', label:'OOP Patterns',     desc:'Classes & design patterns' },
+    { emoji:'🚀', label:'Build a Web App!',  desc:'Interactive web application' },
+  ],
+  react: [
+    { emoji:'⚛️', label:'React Basics',      desc:'Components, JSX, rendering' },
+    { emoji:'💾', label:'State & Props',      desc:'useState and data flow' },
+    { emoji:'🪝', label:'Hooks',             desc:'useEffect, useContext' },
+    { emoji:'🗺️', label:'Routing',           desc:'Pages and navigation' },
+    { emoji:'🏗️', label:'State Management', desc:'Context API, Zustand' },
+    { emoji:'🚀', label:'Build a React App!',desc:'Full React application' },
+  ],
+  backend: [
+    { emoji:'🌐', label:'HTTP & REST',        desc:'Requests, responses, REST' },
+    { emoji:'🛣️', label:'Routing & Middleware',desc:'Route handlers' },
+    { emoji:'🗄️', label:'Databases',         desc:'SQL, PostgreSQL, MongoDB' },
+    { emoji:'🔐', label:'Authentication',     desc:'JWT, sessions, OAuth' },
+    { emoji:'☁️', label:'Deployment',         desc:'Cloud and CI/CD basics' },
+    { emoji:'🚀', label:'Ship a REST API!',   desc:'Build and deploy' },
+  ],
+  unity: [
+    { emoji:'🖥️', label:'Unity Interface',    desc:'Editor and inspector' },
+    { emoji:'💻', label:'C# Scripting',        desc:'Code your game logic' },
+    { emoji:'🌍', label:'Physics & Collisions',desc:'Gravity and triggers' },
+    { emoji:'🎭', label:'2D Mechanics',        desc:'Sprites and animation' },
+    { emoji:'🔊', label:'UI & Audio',          desc:'Buttons, menus, sound' },
+    { emoji:'🎮', label:'Publish Your Game!',  desc:'Share with the world' },
+  ],
+  'python-basics': [
+    { emoji:'🐣', label:'Python Syntax',       desc:'Variables, loops, if/else' },
+    { emoji:'🔧', label:'Functions & Modules', desc:'Organize your code' },
+    { emoji:'📦', label:'Data Structures',     desc:'Lists, dicts, tuples' },
+    { emoji:'🏛️', label:'OOP',                desc:'Classes and objects' },
+    { emoji:'🌐', label:'File I/O & APIs',     desc:'Read files, fetch data' },
+    { emoji:'🚀', label:'Build a Program!',    desc:'Your first Python app' },
+  ],
+  'ml-basics': [
+    { emoji:'📊', label:'NumPy & Pandas',      desc:'Work with real data' },
+    { emoji:'📈', label:'Data Visualization',  desc:'Charts and graphs' },
+    { emoji:'🧠', label:'Supervised Learning', desc:'Train your first model' },
+    { emoji:'📏', label:'Model Evaluation',    desc:'Is your model good?' },
+    { emoji:'🌳', label:'Advanced Algorithms', desc:'Decision trees, SVM' },
+    { emoji:'🚀', label:'Deploy an ML Model!', desc:'Share your AI with the world!' },
+  ],
+}
+
+const DEFAULT_ROADMAP: RoadmapItem[] = [
+  { emoji:'🌱', label:'Fundamentals',    desc:'Core concepts and syntax' },
+  { emoji:'🔧', label:'Core Features',   desc:'Key tools and patterns' },
+  { emoji:'🏗️', label:'Build Projects', desc:'Apply skills in real scenarios' },
+  { emoji:'⚡', label:'Advanced Topics', desc:'Architecture and optimization' },
+  { emoji:'🚀', label:'Final Project!',  desc:'Build and share something real' },
+]
+
+// ── STEP 4 ─────────────────────────────────────────────────────────────────
+const LEARNING_METHODS = [
+  { key:'story',  emoji:'📖', title:'Story Based Coding',  desc:'Learn through interactive stories and adventures', gradient:'linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%)', glow:'rgba(99,102,241,0.45)' },
+  { key:'age',    emoji:'🎂', title:'Age Based Coding',    desc:'Curriculum tailored to your age and skill level',  gradient:'linear-gradient(135deg,#ec4899 0%,#f472b6 100%)', glow:'rgba(236,72,153,0.45)' },
+  { key:'card',   emoji:'🃏', title:'Card Based Coding',   desc:'Hands-on coding cards for fun learning',           gradient:'linear-gradient(135deg,#f59e0b 0%,#f97316 100%)', glow:'rgba(245,158,11,0.45)' },
+  { key:'game',   emoji:'🎮', title:'Game Based Coding',   desc:'Create games while you learn to code!',            gradient:'linear-gradient(135deg,#10b981 0%,#06b6d4 100%)', glow:'rgba(16,185,129,0.45)' },
+  { key:'puzzle', emoji:'🧩', title:'Puzzle Based Coding', desc:'Solve puzzles to unlock brand-new skills!',        gradient:'linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%)', glow:'rgba(139,92,246,0.45)' },
+]
+
+// ── Step progress indicator ─────────────────────────────────────────────────
+const STEP_COLORS = ['#818cf8','#f472b6','#fbbf24','#34d399']
+const STEP_LABELS = ['Tech','Topic','Language','Learn!']
+
+function StepBar({ step }: { step: number }) {
   return (
-    <div
-      className="relative rounded-3xl overflow-hidden cursor-pointer group"
-      style={{
-        ...path.cardStyle,
-        boxShadow: `0 12px 40px ${path.glowColor}`,
-        transition: 'transform 0.3s cubic-bezier(.34,1.56,.64,1), box-shadow 0.3s ease',
-      }}
-      onClick={onStart}
-      onMouseEnter={(e) => {
-        const el = e.currentTarget as HTMLDivElement
-        el.style.transform = 'scale(1.06) translateY(-6px)'
-        el.style.boxShadow = `0 24px 64px ${path.glowColor}`
-      }}
-      onMouseLeave={(e) => {
-        const el = e.currentTarget as HTMLDivElement
-        el.style.transform = 'scale(1) translateY(0)'
-        el.style.boxShadow = `0 12px 40px ${path.glowColor}`
-      }}
-    >
-      {/* Image fills the card */}
-      <div className="relative h-60 w-full overflow-hidden">
-        <Image
-          src={path.image}
-          alt={path.id}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-contain p-4 drop-shadow-2xl group-hover:scale-110 transition-transform duration-500"
-        />
-        {/* subtle shimmer overlay on hover */}
-        <div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-          style={{
-            background:
-              'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 60%)',
-          }}
-        />
-      </div>
-
-      {/* Button */}
-      <div className="px-5 pb-5 pt-1">
-        <button
-          className="w-full py-3 rounded-2xl font-extrabold text-white text-base tracking-wide transition-all duration-200 hover:brightness-110 active:scale-95 select-none"
-          style={{
-            ...path.btnStyle,
-            boxShadow: `0 4px 18px ${path.glowColor}`,
-          }}
-          onClick={(e) => {
-            e.stopPropagation()
-            onStart()
-          }}
-        >
-          ▶ &nbsp;Start Path
-        </button>
-      </div>
+    <div className="flex items-center justify-center gap-1 mb-10">
+      {[1,2,3,4].map((s) => (
+        <div key={s} className="flex items-center gap-1">
+          <div className="flex flex-col items-center gap-1">
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-extrabold transition-all duration-300"
+              style={
+                s === step
+                  ? { background: `linear-gradient(135deg,${STEP_COLORS[s-1]},${STEP_COLORS[s % 4]})`, color:'#fff', boxShadow:`0 0 18px ${STEP_COLORS[s-1]}99` }
+                  : s < step
+                  ? { background: STEP_COLORS[s-1]+'33', color: STEP_COLORS[s-1], border:`1.5px solid ${STEP_COLORS[s-1]}66` }
+                  : { background:'rgba(255,255,255,0.06)', color:'rgba(255,255,255,0.2)', border:'1.5px solid rgba(255,255,255,0.08)' }
+              }
+            >
+              {s < step ? '✓' : s}
+            </div>
+            <span className="text-[10px] font-bold hidden sm:block" style={{ color: s <= step ? STEP_COLORS[s-1] : 'rgba(255,255,255,0.2)' }}>
+              {STEP_LABELS[s-1]}
+            </span>
+          </div>
+          {s < 4 && (
+            <div className="w-8 sm:w-12 h-px mb-4 transition-all duration-500" style={{ background: s < step ? STEP_COLORS[s-1]+'55' : 'rgba(255,255,255,0.08)' }} />
+          )}
+        </div>
+      ))}
     </div>
   )
 }
 
-/* ── Page ── */
+// ── Page ───────────────────────────────────────────────────────────────────
 export default function ChooseSkillPathPage() {
   const router = useRouter()
+  const [step, setStep]   = useState(1)
+  const [tech, setTech]   = useState<TechId | null>(null)
+  const [topic, setTopic] = useState<Topic | null>(null)
+  const [lang, setLang]   = useState<string | null>(null)
+  const [comingSoon, setComingSoon] = useState(false)
 
-  function handleStartPath(path: SkillPath) {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('kindercode_selected_path', path.id)
-    }
-    router.push(path.gamePath as string)
+  const techData = tech ? TECHNOLOGIES.find((t) => t.id === tech) : null
+
+  function pickTech(id: TechId) {
+    setTech(id); setTopic(null); setLang(null); setStep(2)
+    if (typeof window !== 'undefined') localStorage.setItem('kindercode_tech', id)
+  }
+
+  function pickTopic(t: Topic) {
+    setTopic(t)
+    const langs = LANGUAGES[t.key] ?? []
+    setLang(langs.length <= 1 ? (langs[0]?.key ?? 'default') : null)
+    setStep(3)
   }
 
   return (
-    <div
-      className="min-h-screen flex flex-col py-12 px-4"
-      style={{
-        background:
-          'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
-      }}
+    <div className="min-h-screen flex flex-col py-10 px-4"
+      style={{ background:'linear-gradient(135deg,#0f0c29 0%,#302b63 50%,#24243e 100%)' }}
     >
-      {/* Ambient background orbs */}
+      {/* Ambient orbs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden>
-        <div
-          className="absolute top-1/4 left-1/5 w-96 h-96 rounded-full blur-3xl opacity-20 animate-float"
-          style={{ background: 'radial-gradient(circle, #a78bfa, transparent)' }}
-        />
-        <div
-          className="absolute bottom-1/3 right-1/5 w-72 h-72 rounded-full blur-3xl opacity-20 animate-float"
-          style={{
-            background: 'radial-gradient(circle, #f472b6, transparent)',
-            animationDelay: '1.8s',
-          }}
-        />
+        <div className="absolute top-1/4 left-[10%] w-80 h-80 rounded-full blur-3xl opacity-20 animate-float" style={{ background:'radial-gradient(circle,#a78bfa,transparent)' }} />
+        <div className="absolute bottom-1/4 right-[10%] w-64 h-64 rounded-full blur-3xl opacity-20 animate-float" style={{ background:'radial-gradient(circle,#f472b6,transparent)', animationDelay:'2s' }} />
+        <div className="absolute top-1/2 right-1/4 w-48 h-48 rounded-full blur-3xl opacity-10 animate-float" style={{ background:'radial-gradient(circle,#06b6d4,transparent)', animationDelay:'3.5s' }} />
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto w-full">
-        {/* Step pill + Title */}
-        <div className="text-center mb-12 animate-slide-up-3d">
-          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 px-4 py-1.5 rounded-full text-white/70 text-sm font-semibold mb-5">
-            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-            Step 2 of 3 — Choose Your Path
-          </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-3 leading-tight">
-            Choose Your{' '}
-            <span
-              style={{
-                background:
-                  'linear-gradient(135deg, #a78bfa 0%, #f472b6 60%, #fb923c 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              Skill Path
-            </span>
-          </h1>
-          <p className="text-white/50 text-lg max-w-sm mx-auto">
-            Pick your adventure. You can always explore others later!
-          </p>
-        </div>
 
-        {/* Cards — Row 1: 3, Row 2: 2 centred */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-          {SKILL_PATHS.slice(0, 3).map((path) => (
-            <SkillCard
-              key={path.id}
-              path={path}
-              onStart={() => handleStartPath(path)}
-            />
-          ))}
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
-          {SKILL_PATHS.slice(3).map((path) => (
-            <SkillCard
-              key={path.id}
-              path={path}
-              onStart={() => handleStartPath(path)}
-            />
-          ))}
-        </div>
-
-        {/* ── Go to Dashboard ── */}
-        <div className="flex justify-center mt-14">
-          <button
-            onClick={() => router.push('/home')}
-            className="px-14 py-4 rounded-2xl text-white text-xl font-extrabold transition-all duration-300 hover:scale-105 active:scale-95 animate-bounce-3d"
-            style={{
-              background:
-                'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%)',
-              boxShadow: '0 12px 48px rgba(99,102,241,0.55)',
-            }}
-          >
-            🚀 &nbsp;Go to Dashboard
+        {step > 1 && (
+          <button onClick={() => setStep((s) => s - 1)} className="flex items-center gap-1.5 mb-6 text-white/50 hover:text-white transition-colors text-sm font-semibold">
+            <ChevronLeft size={16} /> Back
           </button>
-        </div>
+        )}
+
+        <StepBar step={step} />
+
+        {/* ── STEP 1 ── */}
+        {step === 1 && (
+          <>
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 px-4 py-1.5 rounded-full text-white/60 text-xs font-semibold mb-5">
+                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                Step 1 of 4 — What do you want to build?
+              </div>
+              <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-3 leading-tight">
+                Choose Your{' '}
+                <span style={{ background:'linear-gradient(135deg,#a78bfa 0%,#f472b6 60%,#fb923c 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>
+                  Adventure!
+                </span>{' '}🚀
+              </h1>
+              <p className="text-white/50 text-base">Pick what you want to create today!</p>
+            </div>
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+              {TECHNOLOGIES.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => pickTech(t.id)}
+                  className="rounded-3xl p-6 text-center group transition-all duration-300 hover:scale-105 active:scale-95 flex flex-col items-center"
+                  style={{ background: t.gradient, boxShadow:`0 8px 32px ${t.glow}` }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = `0 18px 56px ${t.glow}` }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 32px ${t.glow}` }}
+                >
+                  <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">{t.emoji}</div>
+                  <p className="text-white font-extrabold text-base mb-1">{t.title}</p>
+                  <p className="text-white/70 text-xs mb-5 leading-snug">{t.desc}</p>
+                  <div className="bg-white/20 hover:bg-white/30 rounded-xl px-4 py-1.5 text-white text-xs font-bold transition-colors">
+                    Let&apos;s Go! →
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div className="flex justify-center mt-12">
+              <button
+                onClick={() => router.push('/home')}
+                className="px-12 py-4 rounded-2xl text-white text-base font-extrabold transition-all duration-300 hover:scale-105 active:scale-95"
+                style={{ background:'linear-gradient(135deg,#6366f1 0%,#8b5cf6 50%,#ec4899 100%)', boxShadow:'0 10px 40px rgba(99,102,241,0.5)' }}
+              >
+                🚀 Go to Dashboard
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* ── STEP 2 ── */}
+        {step === 2 && tech && (
+          <>
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 px-4 py-1.5 rounded-full text-white/60 text-xs font-semibold mb-4">
+                <span className="text-lg">{techData?.emoji}</span> {techData?.title}
+              </div>
+              <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2">
+                What do you want to{' '}
+                <span style={{ background:'linear-gradient(135deg,#a78bfa 0%,#34d399 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>
+                  learn?
+                </span>
+              </h1>
+              <p className="text-white/40 text-sm">Pick one topic to start your journey! 🗺️</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {TOPICS[tech].map((t, i) => {
+                const c = CHIP_COLORS[i % CHIP_COLORS.length]
+                return (
+                  <button
+                    key={t.key}
+                    onClick={() => pickTopic(t)}
+                    className="p-6 rounded-2xl text-left transition-all duration-200 group hover:scale-105 active:scale-95"
+                    style={{ background: c.bg, border:`1.5px solid ${c.border}` }}
+                  >
+                    <p className="font-extrabold text-base mb-1.5" style={{ color: c.text }}>{t.label}</p>
+                    <p className="text-white/50 text-sm mb-4 leading-relaxed">{t.desc}</p>
+                    <div className="text-xs font-bold flex items-center gap-1" style={{ color: c.text }}>
+                      Select <span className="group-hover:translate-x-1 transition-transform inline-block">→</span>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </>
+        )}
+
+        {/* ── STEP 3 ── */}
+        {step === 3 && topic && (
+          <div className="space-y-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-extrabold text-white mb-2">
+                Pick Your{' '}
+                <span style={{ background:'linear-gradient(135deg,#fbbf24 0%,#f472b6 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>
+                  Language
+                </span>{' '}🧑‍💻
+              </h2>
+              <p className="text-white/40 text-sm">{topic.label} — how do you want to code it?</p>
+            </div>
+
+            {/* Language pills */}
+            <div className="flex flex-wrap gap-3 justify-center">
+              {(LANGUAGES[topic.key] ?? [{ key:'default', label:'Standard', icon:'💻' }]).map((l) => (
+                <button
+                  key={l.key}
+                  onClick={() => setLang(l.key)}
+                  className="flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold transition-all duration-200 hover:scale-105 active:scale-95"
+                  style={
+                    lang === l.key
+                      ? { background:'linear-gradient(135deg,#6366f1,#a855f7)', color:'white', boxShadow:'0 4px 20px rgba(99,102,241,0.5)' }
+                      : { background:'rgba(255,255,255,0.08)', border:'1.5px solid rgba(255,255,255,0.15)', color:'rgba(255,255,255,0.6)' }
+                  }
+                >
+                  <span className="text-lg">{l.icon}</span> {l.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Roadmap */}
+            <div className="rounded-3xl p-6" style={{ background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.1)' }}>
+              <div className="flex items-center gap-2 mb-5">
+                <Map size={16} className="text-purple-400" />
+                <span className="text-white font-extrabold text-sm">Your Learning Roadmap 🗺️</span>
+              </div>
+              {(ROADMAPS[topic.key] ?? DEFAULT_ROADMAP).map((item, i, arr) => (
+                <div key={i} className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-base"
+                      style={{ background:'linear-gradient(135deg,rgba(99,102,241,0.3),rgba(168,85,247,0.3))', border:'1px solid rgba(99,102,241,0.4)' }}>
+                      {item.emoji}
+                    </div>
+                    {i < arr.length - 1 && <div className="w-px my-1 flex-1" style={{ background:'rgba(255,255,255,0.08)', minHeight:'16px' }} />}
+                  </div>
+                  <div className="pb-4">
+                    <p className="text-white font-bold text-sm">{item.label}</p>
+                    <p className="text-white/40 text-xs mt-0.5">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-center">
+              <button
+                onClick={() => lang && setStep(4)}
+                disabled={!lang}
+                className="px-10 py-4 rounded-2xl text-white font-extrabold text-base transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ background:'linear-gradient(135deg,#6366f1,#a855f7)', boxShadow: lang ? '0 8px 32px rgba(99,102,241,0.5)' : 'none' }}
+              >
+                {lang ? 'Continue to Learning Methods! →' : 'Select a language first ☝️'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── STEP 4 ── */}
+        {step === 4 && (
+          <div>
+            <div className="text-center mb-8">
+              <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-2">
+                How do you want to{' '}
+                <span style={{ background:'linear-gradient(135deg,#fbbf24 0%,#34d399 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>
+                  learn?
+                </span>{' '}✨
+              </h2>
+              {topic && (
+                <p className="text-white/40 text-sm">
+                  {techData?.emoji} {techData?.title} · {topic.label} ·{' '}
+                  <span className="text-purple-400">{LANGUAGES[topic.key]?.find((l) => l.key === lang)?.label ?? lang}</span>
+                </p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {LEARNING_METHODS.map((m) => (
+                <div key={m.key} className="rounded-3xl overflow-hidden flex flex-col" style={{ background: m.gradient, boxShadow:`0 8px 32px ${m.glow}` }}>
+                  <div className="p-6 flex flex-col flex-1">
+                    <div className="text-4xl mb-4">{m.emoji}</div>
+                    <p className="font-extrabold text-white text-base mb-2">{m.title}</p>
+                    <p className="text-white/75 text-sm flex-1 leading-relaxed mb-5">{m.desc}</p>
+                    <button
+                      onClick={() => setComingSoon(true)}
+                      className="w-full py-3 rounded-2xl bg-white/20 hover:bg-white/30 text-white font-extrabold text-sm transition-all duration-200 active:scale-95"
+                    >
+                      Code Now! ▶
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Coming Soon overlay */}
+      {comingSoon && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background:'rgba(0,0,0,0.75)', backdropFilter:'blur(12px)' }}
+          onClick={() => setComingSoon(false)}
+        >
+          <div
+            className="text-center p-10 rounded-3xl w-full max-w-xs"
+            style={{ background:'linear-gradient(135deg,#1a1a3e,#2d2d6b)', border:'1px solid rgba(255,255,255,0.15)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-6xl mb-4">🚧</div>
+            <h3 className="text-xl font-extrabold text-white mb-2">Coming Soon!</h3>
+            <p className="text-white/50 text-sm mb-6 leading-relaxed">
+              This awesome learning module is being built right now. Check back soon! 🎉
+            </p>
+            <button
+              onClick={() => setComingSoon(false)}
+              className="px-8 py-3 rounded-2xl font-extrabold text-white text-sm transition-all duration-200 hover:scale-105"
+              style={{ background:'linear-gradient(135deg,#6366f1,#a855f7)' }}
+            >
+              OK, got it! 👍
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
